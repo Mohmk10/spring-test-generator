@@ -10,7 +10,7 @@ jobs:
   build:
     name: Build and Test on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
-
+    
     strategy:
       fail-fast: false
       matrix:
@@ -36,17 +36,21 @@ jobs:
           restore-keys: ${{ runner.os }}-m2
 
       - name: Build with Maven (skip jacoco check)
+        shell: bash
         run: mvn clean install -Djacoco.skip=true -B -V
 
       - name: Run tests
+        shell: bash
         run: mvn test -Djacoco.skip=true -B
 
       - name: Generate coverage report
+        shell: bash
         run: mvn jacoco:report -Djacoco.skip=false
         continue-on-error: true
 
       - name: Archive test results
         if: always()
+        continue-on-error: true
         uses: actions/upload-artifact@v4
         with:
           name: test-results-${{ matrix.os }}-${{ matrix.java }}
@@ -55,6 +59,7 @@ jobs:
             **/target/site/jacoco/
 
       - name: Archive JAR files
+        continue-on-error: true
         uses: actions/upload-artifact@v4
         with:
           name: jars-${{ matrix.os }}
@@ -103,9 +108,11 @@ jobs:
           cache: maven
 
       - name: Run integration tests
+        shell: bash
         run: mvn verify -Djacoco.skip=true -B
 
       - name: Test CLI JAR
+        shell: bash
         run: |
           java -jar cli/target/spring-test-gen.jar --version
           java -jar cli/target/spring-test-gen.jar --help
