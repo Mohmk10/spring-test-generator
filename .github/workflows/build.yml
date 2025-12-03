@@ -36,12 +36,15 @@ jobs:
           restore-keys: ${{ runner.os }}-m2
 
       - name: Build with Maven (skip jacoco check)
+        shell: bash
         run: mvn clean install -Djacoco.skip=true -B -V
 
       - name: Run tests
+        shell: bash
         run: mvn test -Djacoco.skip=true -B
 
       - name: Generate coverage report
+        shell: bash
         run: mvn jacoco:report -Djacoco.skip=false
         continue-on-error: true
 
