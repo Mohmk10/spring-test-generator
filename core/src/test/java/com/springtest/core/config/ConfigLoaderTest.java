@@ -88,7 +88,14 @@ class ConfigLoaderTest {
 
         assertThat(Files.exists(outputFile)).isTrue();
         String content = Files.readString(outputFile);
-        assertThat(content).contains("sourceDirectory=src/main/kotlin");
+        
+        // FIXED: Handle both Unix (/) and Windows (\\) path separators
+        // Properties files on Windows escape backslashes as \\
+        // We use containsAnyOf to accept both formats
+        assertThat(content).containsAnyOf(
+            "sourceDirectory=src/main/kotlin",      // Unix/macOS format
+            "sourceDirectory=src\\\\main\\\\kotlin"  // Windows format (double-escaped in properties file)
+        );
         assertThat(content).contains("skipExisting=false");
         assertThat(content).contains("generateEdgeCases=true");
         assertThat(content).contains("testNamingConvention=BDD");
