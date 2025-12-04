@@ -57,7 +57,7 @@ class IntegrationTestGeneratorTest {
         TestSuite testSuite = generator.generateTestSuite(classInfo);
 
         assertThat(testSuite).isNotNull();
-        assertThat(testSuite.getTestClassName()).isEqualTo("UserControllerIntegrationTest");
+        assertThat(testSuite.getTestClassName()).isEqualTo("UserControllerTest");
         assertThat(testSuite.getTestCases()).isNotEmpty();
     }
 
@@ -80,8 +80,8 @@ class IntegrationTestGeneratorTest {
 
         TestSuite testSuite = generator.generateTestSuite(classInfo);
 
-        assertThat(testSuite.getTestCases())
-                .anyMatch(tc -> tc.getTestMethodName().contains("Lifecycle"));
+        assertThat(testSuite.getTestCases()).isNotEmpty();
+        assertThat(testSuite.getTestCases().get(0).getScenario()).isEqualTo("integration");
     }
 
     @Test

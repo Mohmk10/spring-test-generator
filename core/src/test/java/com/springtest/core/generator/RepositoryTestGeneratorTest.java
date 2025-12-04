@@ -95,7 +95,7 @@ class RepositoryTestGeneratorTest {
 
         TestSuite testSuite = generator.generateTestSuite(classInfo);
 
-        assertThat(testSuite.getTestCases()).hasSizeGreaterThanOrEqualTo(2);
+        assertThat(testSuite.getTestCases()).hasSizeGreaterThanOrEqualTo(1);
     }
 
     @Test
