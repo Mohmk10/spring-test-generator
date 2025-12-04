@@ -1,0 +1,170 @@
+package com.springtest.core.generator;
+
+import com.springtest.core.assertion.AssertionGenerator;
+import com.springtest.core.config.GeneratorConfig;
+import com.springtest.core.mock.MockGenerator;
+import com.springtest.core.mock.StubGenerator;
+import com.springtest.core.mock.VerifyGenerator;
+import com.springtest.core.model.ClassInfo;
+import com.springtest.core.model.MethodInfo;
+import com.springtest.core.model.ParameterInfo;
+import com.springtest.core.model.TestSuite;
+import com.springtest.core.naming.impl.MethodScenarioExpectedNaming;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+class RepositoryTestGeneratorTest {
+
+    private RepositoryTestGenerator generator;
+    private GeneratorConfig config;
+
+    @BeforeEach
+    void setUp() {
+        config = GeneratorConfig.builder().build();
+        generator = new RepositoryTestGenerator(
+                config,
+                new MethodScenarioExpectedNaming(),
+                new MockGenerator(),
+                new StubGenerator(),
+                new VerifyGenerator(),
+                new AssertionGenerator()
+        );
+    }
+
+    @Test
+    @DisplayName("Should generate test suite for repository with findBy method")
+    void shouldGenerateTestSuiteForFindByMethod() {
+        ClassInfo classInfo = ClassInfo.builder()
+                .packageName("com.example.repository")
+                .simpleName("UserRepository")
+                .fullyQualifiedName("com.example.repository.UserRepository")
+                .annotations(List.of())
+                .fields(List.of())
+                .methods(List.of(
+                        MethodInfo.builder()
+                                .name("findByEmail")
+                                .returnType("Optional<User>")
+                                .simpleReturnType("Optional<User>")
+                                .parameters(List.of(
+                                        ParameterInfo.builder()
+                                                .name("email")
+                                                .type("String")
+                                                .simpleType("String")
+                                                .build()
+                                ))
+                                .annotations(List.of())
+                                .build()
+                ))
+                .build();
+
+        TestSuite testSuite = generator.generateTestSuite(classInfo);
+
+        assertThat(testSuite).isNotNull();
+        assertThat(testSuite.getTestClassName()).isEqualTo("UserRepositoryTest");
+        assertThat(testSuite.getTestCases()).isNotEmpty();
+    }
+
+    @Test
+    @DisplayName("Should generate test suite for repository with existsBy method")
+    void shouldGenerateTestSuiteForExistsByMethod() {
+        ClassInfo classInfo = ClassInfo.builder()
+                .packageName("com.example.repository")
+                .simpleName("UserRepository")
+                .fullyQualifiedName("com.example.repository.UserRepository")
+                .fields(List.of())
+                .methods(List.of(
+                        MethodInfo.builder()
+                                .name("existsByEmail")
+                                .returnType("boolean")
+                                .simpleReturnType("boolean")
+                                .parameters(List.of(
+                                        ParameterInfo.builder()
+                                                .name("email")
+                                                .type("String")
+                                                .simpleType("String")
+                                                .build()
+                                ))
+                                .build()
+                ))
+                .build();
+
+        TestSuite testSuite = generator.generateTestSuite(classInfo);
+
+        assertThat(testSuite.getTestCases()).hasSizeGreaterThanOrEqualTo(2);
+    }
+
+    @Test
+    @DisplayName("Should generate correct imports for repository test")
+    void shouldGenerateCorrectImports() {
+        ClassInfo classInfo = ClassInfo.builder()
+                .packageName("com.example.repository")
+                .simpleName("UserRepository")
+                .fullyQualifiedName("com.example.repository.UserRepository")
+                .fields(List.of())
+                .methods(List.of())
+                .build();
+
+        TestSuite testSuite = generator.generateTestSuite(classInfo);
+
+        assertThat(testSuite.getImports())
+                .contains("import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;")
+                .contains("import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;");
+    }
+
+    @Test
+    @DisplayName("Should generate correct class annotations")
+    void shouldGenerateCorrectClassAnnotations() {
+        ClassInfo classInfo = ClassInfo.builder()
+                .packageName("com.example.repository")
+                .simpleName("UserRepository")
+                .fullyQualifiedName("com.example.repository.UserRepository")
+                .fields(List.of())
+                .methods(List.of())
+                .build();
+
+        TestSuite testSuite = generator.generateTestSuite(classInfo);
+
+        assertThat(testSuite.getClassAnnotations()).contains("@DataJpaTest");
+    }
+
+    @Test
+    @DisplayName("Should generate test fields with repository and entity manager")
+    void shouldGenerateCorrectTestFields() {
+        ClassInfo classInfo = ClassInfo.builder()
+                .packageName("com.example.repository")
+                .simpleName("UserRepository")
+                .fullyQualifiedName("com.example.repository.UserRepository")
+                .fields(List.of())
+                .methods(List.of())
+                .build();
+
+        TestSuite testSuite = generator.generateTestSuite(classInfo);
+
+        assertThat(testSuite.getTestFields())
+                .anyMatch(field -> field.contains("UserRepository repository"))
+                .anyMatch(field -> field.contains("TestEntityManager entityManager"));
+    }
+
+    @Test
+    @DisplayName("Should generate setup method with cleanup")
+    void shouldGenerateSetupMethod() {
+        ClassInfo classInfo = ClassInfo.builder()
+                .packageName("com.example.repository")
+                .simpleName("UserRepository")
+                .fullyQualifiedName("com.example.repository.UserRepository")
+                .fields(List.of())
+                .methods(List.of())
+                .build();
+
+        TestSuite testSuite = generator.generateTestSuite(classInfo);
+
+        assertThat(testSuite.getSetupMethods())
+                .anyMatch(method -> method.contains("@BeforeEach"))
+                .anyMatch(method -> method.contains("repository.deleteAll()"));
+    }
+}

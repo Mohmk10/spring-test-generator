@@ -1,36 +1,49 @@
 package ${packageName};
 
 <#list imports as import>
-    ${import}
+    import ${import};
 </#list>
 
-<#list classAnnotations as annotation>
-    ${annotation}
-</#list>
-class ${className} {
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@AutoConfigureMockMvc
+<#if useTestcontainers>
+    @Testcontainers
+</#if>
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+class ${testClassName} {
 
-<#list testFields as field>
-    ${field}
+<#if useTestcontainers>
+    @Container
+    static ${databaseType?cap_first}Container<?> ${databaseType} = new ${databaseType?cap_first}Container<>("${databaseType}:${databaseType == 'postgresql' ? '16' : '8'}");
 
-</#list>
+    @DynamicPropertySource
+    static void configureProperties(DynamicPropertyRegistry registry) {
+    registry.add("spring.datasource.url", ${databaseType}::getJdbcUrl);
+    registry.add("spring.datasource.username", ${databaseType}::getUsername);
+    registry.add("spring.datasource.password", ${databaseType}::getPassword);
+    }
 
-<#list setupMethods as setup>
-    ${setup}
-</#list>
+</#if>
+@Autowired
+private MockMvc mockMvc;
 
-<#list testCases as testCase>
+@Autowired
+private ${className}Repository repository;
+
+@Autowired
+private ObjectMapper objectMapper;
+
+@BeforeEach
+void setUp() {
+repository.deleteAll();
+}
+
+<#list testMethods as method>
     @Test
-    @DisplayName("${testCase.displayName}")
-    void ${testCase.testMethodName}() throws Exception {
-    <#list testCase.givenStatements as given>
-        ${given}
-    </#list>
-
-    ${testCase.whenStatement}
-
-    <#list testCase.thenStatements as then>
-        ${then}
-    </#list>
+    @Order(${method.order})
+    @DisplayName("${method.displayName}")
+    void ${method.name}() throws Exception {
+    ${method.body}
     }
 
 </#list>

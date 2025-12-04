@@ -1,39 +1,30 @@
 package ${packageName};
 
 <#list imports as import>
-    ${import}
+    import ${import};
 </#list>
 
-<#list classAnnotations as annotation>
-    ${annotation}
+@WebMvcTest(${className}.class)
+class ${testClassName} {
+
+@Autowired
+private MockMvc mockMvc;
+
+<#list mockBeans as mockBean>
+    @MockBean
+    private ${mockBean.type} ${mockBean.name};
+
 </#list>
-class ${className} {
+<#if needsObjectMapper>
+    @Autowired
+    private ObjectMapper objectMapper;
 
-<#list testFields as field>
-    ${field}
-
-</#list>
-
-<#list setupMethods as setup>
-    ${setup}
-</#list>
-
-<#list testCases as testCase>
+</#if>
+<#list testMethods as method>
     @Test
-    @DisplayName("${testCase.displayName}")
-    void ${testCase.testMethodName}() throws Exception {
-    <#list testCase.givenStatements as given>
-        ${given}
-    </#list>
-
-    <#list testCase.mockSetups as mock>
-        ${mock}
-    </#list>
-
-    ${testCase.whenStatement}
-    <#list testCase.thenStatements as then>
-        ${then}
-    </#list>;
+    @DisplayName("${method.displayName}")
+    void ${method.name}() throws Exception {
+    ${method.body}
     }
 
 </#list>

@@ -1,0 +1,158 @@
+package com.springtest.core.generator;
+
+import com.springtest.core.assertion.AssertionGenerator;
+import com.springtest.core.config.GeneratorConfig;
+import com.springtest.core.mock.MockGenerator;
+import com.springtest.core.mock.StubGenerator;
+import com.springtest.core.mock.VerifyGenerator;
+import com.springtest.core.model.ClassInfo;
+import com.springtest.core.model.MethodInfo;
+import com.springtest.core.model.TestSuite;
+import com.springtest.core.naming.impl.MethodScenarioExpectedNaming;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+class IntegrationTestGeneratorTest {
+
+    private IntegrationTestGenerator generator;
+    private GeneratorConfig config;
+
+    @BeforeEach
+    void setUp() {
+        config = GeneratorConfig.builder().build();
+        generator = new IntegrationTestGenerator(
+                config,
+                new MethodScenarioExpectedNaming(),
+                new MockGenerator(),
+                new StubGenerator(),
+                new VerifyGenerator(),
+                new AssertionGenerator()
+        );
+    }
+
+    @Test
+    @DisplayName("Should generate integration test suite")
+    void shouldGenerateIntegrationTestSuite() {
+        ClassInfo classInfo = ClassInfo.builder()
+                .packageName("com.example.controller")
+                .simpleName("UserController")
+                .fullyQualifiedName("com.example.controller.UserController")
+                .annotations(List.of())
+                .fields(List.of())
+                .methods(List.of(
+                        MethodInfo.builder()
+                                .name("createUser")
+                                .returnType("UserResponse")
+                                .simpleReturnType("UserResponse")
+                                .parameters(List.of())
+                                .build()
+                ))
+                .build();
+
+        TestSuite testSuite = generator.generateTestSuite(classInfo);
+
+        assertThat(testSuite).isNotNull();
+        assertThat(testSuite.getTestClassName()).isEqualTo("UserControllerIntegrationTest");
+        assertThat(testSuite.getTestCases()).isNotEmpty();
+    }
+
+    @Test
+    @DisplayName("Should generate CRUD lifecycle test")
+    void shouldGenerateCrudLifecycleTest() {
+        ClassInfo classInfo = ClassInfo.builder()
+                .packageName("com.example.controller")
+                .simpleName("UserController")
+                .fullyQualifiedName("com.example.controller.UserController")
+                .fields(List.of())
+                .methods(List.of(
+                        MethodInfo.builder()
+                                .name("anyMethod")
+                                .returnType("void")
+                                .simpleReturnType("void")
+                                .build()
+                ))
+                .build();
+
+        TestSuite testSuite = generator.generateTestSuite(classInfo);
+
+        assertThat(testSuite.getTestCases())
+                .anyMatch(tc -> tc.getTestMethodName().contains("Lifecycle"));
+    }
+
+    @Test
+    @DisplayName("Should generate correct imports for integration test")
+    void shouldGenerateCorrectImports() {
+        ClassInfo classInfo = ClassInfo.builder()
+                .packageName("com.example.controller")
+                .simpleName("UserController")
+                .fullyQualifiedName("com.example.controller.UserController")
+                .fields(List.of())
+                .methods(List.of())
+                .build();
+
+        TestSuite testSuite = generator.generateTestSuite(classInfo);
+
+        assertThat(testSuite.getImports())
+                .contains("import org.springframework.boot.test.context.SpringBootTest;")
+                .contains("import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;")
+                .contains("import org.springframework.test.web.servlet.MockMvc;");
+    }
+
+    @Test
+    @DisplayName("Should generate correct class annotations")
+    void shouldGenerateCorrectClassAnnotations() {
+        ClassInfo classInfo = ClassInfo.builder()
+                .packageName("com.example.controller")
+                .simpleName("UserController")
+                .fullyQualifiedName("com.example.controller.UserController")
+                .fields(List.of())
+                .methods(List.of())
+                .build();
+
+        TestSuite testSuite = generator.generateTestSuite(classInfo);
+
+        assertThat(testSuite.getClassAnnotations())
+                .contains("@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)")
+                .contains("@AutoConfigureMockMvc");
+    }
+
+    @Test
+    @DisplayName("Should generate edge case tests when enabled")
+    void shouldGenerateEdgeCaseTests() {
+        config = GeneratorConfig.builder()
+                .generateEdgeCases(true)
+                .build();
+
+        generator = new IntegrationTestGenerator(
+                config,
+                new MethodScenarioExpectedNaming(),
+                new MockGenerator(),
+                new StubGenerator(),
+                new VerifyGenerator(),
+                new AssertionGenerator()
+        );
+
+        ClassInfo classInfo = ClassInfo.builder()
+                .packageName("com.example.controller")
+                .simpleName("UserController")
+                .fullyQualifiedName("com.example.controller.UserController")
+                .fields(List.of())
+                .methods(List.of(
+                        MethodInfo.builder()
+                                .name("getUser")
+                                .returnType("UserResponse")
+                                .simpleReturnType("UserResponse")
+                                .build()
+                ))
+                .build();
+
+        TestSuite testSuite = generator.generateTestSuite(classInfo);
+
+        assertThat(testSuite.getTestCases().size()).isGreaterThan(1);
+    }
+}

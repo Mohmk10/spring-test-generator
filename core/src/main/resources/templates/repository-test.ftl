@@ -1,43 +1,50 @@
 package ${packageName};
 
 <#list imports as import>
-    ${import}
+    import ${import};
 </#list>
 
-<#list classAnnotations as annotation>
-    ${annotation}
-</#list>
-class ${className} {
+@DataJpaTest
+<#if useTestcontainers>
+    @AutoConfigureTestDatabase(replace = Replace.NONE)
+    @Testcontainers
+</#if>
+class ${testClassName} {
 
-<#list testFields as field>
-    ${field}
+<#if useTestcontainers>
+    @Container
+    static ${databaseType?cap_first}Container<?> ${databaseType} = new ${databaseType?cap_first}Container<>("${databaseType}:${databaseType == 'postgresql' ? '16' : '8'}")
+    .withDatabaseName("testdb")
+    .withUsername("test")
+    .withPassword("test");
 
-</#list>
+    @DynamicPropertySource
+    static void configureProperties(DynamicPropertyRegistry registry) {
+    registry.add("spring.datasource.url", ${databaseType}::getJdbcUrl);
+    registry.add("spring.datasource.username", ${databaseType}::getUsername);
+    registry.add("spring.datasource.password", ${databaseType}::getPassword);
+    }
 
-<#list setupMethods as setup>
-    ${setup}
-</#list>
+</#if>
+@Autowired
+private ${className} repository;
 
-<#list testCases as testCase>
+@Autowired
+private TestEntityManager entityManager;
+
+<#if needsSetup>
+    @BeforeEach
+    void setUp() {
+    repository.deleteAll();
+    }
+
+</#if>
+<#list testMethods as method>
     @Test
-    @DisplayName("${testCase.displayName}")
-    void ${testCase.testMethodName}() {
-    <#list testCase.givenStatements as given>
-        ${given}
-    </#list>
-
-    ${testCase.whenStatement}
-
-    <#list testCase.thenStatements as then>
-        ${then}
-    </#list>
+    @DisplayName("${method.displayName}")
+    void ${method.name}() {
+    ${method.body}
     }
 
 </#list>
-
-private Entity createTestEntity() {
-return Entity.builder()
-.name("Test")
-.build();
-}
 }
