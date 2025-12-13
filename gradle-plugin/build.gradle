@@ -1,0 +1,45 @@
+plugins {
+    id 'java-gradle-plugin'
+    id 'maven-publish'
+}
+
+group = 'com.springtestgen'
+version = '1.0.0-SNAPSHOT'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // Core module dependency will be configured once published
+    // implementation project(':core')
+
+    // Gradle API
+    implementation gradleApi()
+
+    // Testing
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.1'
+    testImplementation 'org.mockito:mockito-core:5.8.0'
+    testImplementation 'org.mockito:mockito-junit-jupiter:5.8.0'
+    testImplementation 'org.assertj:assertj-core:3.25.1'
+}
+
+gradlePlugin {
+    plugins {
+        springTestGenerator {
+            id = 'com.springtestgen.gradle-plugin'
+            implementationClass = 'com.springtestgen.gradle.SpringTestGeneratorPlugin'
+            displayName = 'Spring Test Generator Gradle Plugin'
+            description = 'Gradle plugin for automatic test generation in Spring Boot projects'
+        }
+    }
+}
+
+test {
+    useJUnitPlatform()
+}
