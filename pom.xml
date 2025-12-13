@@ -5,8 +5,8 @@
          http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.springtestgen</groupId>
-    <artifactId>spring-test-generator-parent</artifactId>
+    <groupId>com.springtest</groupId>
+    <artifactId>spring-test-generator</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
@@ -33,9 +33,10 @@
         <javaparser.version>3.25.8</javaparser.version>
         <picocli.version>4.7.5</picocli.version>
         <freemarker.version>2.3.32</freemarker.version>
-        <junit.version>5.10.1</junit.version>
-        <mockito.version>5.8.0</mockito.version>
-        <assertj.version>3.25.1</assertj.version>
+        <junit.version>5.10.2</junit.version>
+        <mockito.version>5.10.0</mockito.version>
+        <assertj.version>3.25.3</assertj.version>
+        <logback.version>1.4.14</logback.version>
 
         <!-- Plugin Versions -->
         <maven-plugin-api.version>3.9.6</maven-plugin-api.version>
@@ -104,6 +105,13 @@
                 <artifactId>assertj-core</artifactId>
                 <version>${assertj.version}</version>
                 <scope>test</scope>
+            </dependency>
+
+            <!-- Logging - Logback -->
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>${logback.version}</version>
             </dependency>
 
             <!-- Maven Plugin API -->
