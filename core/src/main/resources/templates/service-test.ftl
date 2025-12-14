@@ -36,32 +36,19 @@ class ${className}Test {
 <#list methods as method>
     @Test
     void test${method.nameCapitalized}() {
-<#list injectedFields as field>
-        // Arrange
-        // TODO: Setup mock behavior for ${field.name}
-</#list>
-
-        // Act
 <#if method.returnsVoid>
         ${instanceName}.${method.name}(${method.args});
 <#else>
         ${method.returnType} result = ${instanceName}.${method.name}(${method.args});
-</#if>
-
-        // Assert
 <#if !method.returnsVoid>
         assertThat(result).isNotNull();
 </#if>
-        // TODO: Add more assertions
+</#if>
     }
 
 <#if method.throwsExceptions>
     @Test
     void test${method.nameCapitalized}_ThrowsException() {
-        // Arrange
-        // TODO: Setup mocks to throw exception
-
-        // Act & Assert
         assertThatThrownBy(() -> ${instanceName}.${method.name}(${method.args}))
             .isInstanceOf(${method.exceptionType}.class);
     }

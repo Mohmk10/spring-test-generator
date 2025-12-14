@@ -158,15 +158,12 @@ public class ServiceTestGenerator implements TestGenerator {
         test.append("    @Test\n");
         test.append("    void ").append(testMethodName).append("() {\n");
 
-        test.append("        // Arrange\n");
         test.append(generateArrangeSection(classInfo, methodInfo));
         test.append("\n");
 
-        test.append("        // Act\n");
         test.append(generateActSection(classInfo, methodInfo));
         test.append("\n");
 
-        test.append("        // Assert\n");
         test.append(generateAssertSection(methodInfo));
 
         test.append("    }\n");
@@ -180,8 +177,6 @@ public class ServiceTestGenerator implements TestGenerator {
         for (FieldInfo field : classInfo.getInjectedFields()) {
             String mockName = field.name();
 
-            arrange.append("        // Setup mock for ").append(mockName).append("\n");
-            arrange.append("        // when(").append(mockName).append(".someMethod(any())).thenReturn(someValue);\n");
         }
 
         return arrange.toString();
@@ -211,8 +206,6 @@ public class ServiceTestGenerator implements TestGenerator {
             assertSection.append("        ").append(assertion.replace("\n", "\n        ")).append("\n");
         }
 
-        assertSection.append("        // Verify mock interactions\n");
-        assertSection.append("        // verify(mockDependency).methodCall(any());\n");
 
         return assertSection.toString();
     }
@@ -224,12 +217,6 @@ public class ServiceTestGenerator implements TestGenerator {
         test.append("    @Test\n");
         test.append("    void ").append(testMethodName).append("() {\n");
 
-        test.append("        // Arrange\n");
-        test.append("        // Setup mock to throw exception\n");
-        test.append("        // when(mockDependency.someMethod(any())).thenThrow(new RuntimeException(\"Test exception\"));\n");
-        test.append("\n");
-
-        test.append("        // Act & Assert\n");
         String instanceName = getInstanceName(classInfo);
         String methodCall = generateMethodCall(instanceName, methodInfo);
 
@@ -249,7 +236,6 @@ public class ServiceTestGenerator implements TestGenerator {
 
         test.append("    @Test\n");
         test.append("    void testServiceInitialization() {\n");
-        test.append("        // Verify that the service is properly initialized\n");
         String instanceName = getInstanceName(classInfo);
         test.append("        assertThat(").append(instanceName).append(").isNotNull();\n");
         test.append("    }\n");

@@ -191,20 +191,12 @@ public class RepositoryTestGenerator implements TestGenerator {
 
         test.append("    @Test\n");
         test.append("    void testSave() {\n");
-        test.append("        // Arrange\n");
         test.append("        ").append(entityName).append(" entity = new ").append(entityName).append("();\n");
-        test.append("        // Set entity properties\n");
-        test.append("        // entity.setName(\"test\");\n");
-        test.append("\n");
-
-        test.append("        // Act\n");
         test.append("        ").append(entityName).append(" saved = ").append(repositoryField).append(".save(entity);\n");
         test.append("\n");
 
-        test.append("        // Assert\n");
         test.append("        assertThat(saved).isNotNull();\n");
         test.append("        assertThat(saved.getId()).isNotNull();\n");
-        test.append("        // Add more specific assertions\n");
         test.append("    }\n");
 
         return test.toString();
@@ -218,18 +210,14 @@ public class RepositoryTestGenerator implements TestGenerator {
 
         test.append("    @Test\n");
         test.append("    void testFindById() {\n");
-        test.append("        // Arrange\n");
         test.append("        ").append(entityName).append(" entity = new ").append(entityName).append("();\n");
-        test.append("        // Set entity properties\n");
         test.append("        entityManager.persistAndFlush(entity);\n");
         test.append("        Long id = entity.getId();\n");
         test.append("\n");
 
-        test.append("        // Act\n");
         test.append("        Optional<").append(entityName).append("> found = ").append(repositoryField).append(".findById(id);\n");
         test.append("\n");
 
-        test.append("        // Assert\n");
         test.append("        assertThat(found).isPresent();\n");
         test.append("        assertThat(found.get().getId()).isEqualTo(id);\n");
         test.append("    }\n");
@@ -245,7 +233,6 @@ public class RepositoryTestGenerator implements TestGenerator {
 
         test.append("    @Test\n");
         test.append("    void testFindAll() {\n");
-        test.append("        // Arrange\n");
         test.append("        ").append(entityName).append(" entity1 = new ").append(entityName).append("();\n");
         test.append("        ").append(entityName).append(" entity2 = new ").append(entityName).append("();\n");
         test.append("        entityManager.persist(entity1);\n");
@@ -253,11 +240,9 @@ public class RepositoryTestGenerator implements TestGenerator {
         test.append("        entityManager.flush();\n");
         test.append("\n");
 
-        test.append("        // Act\n");
         test.append("        List<").append(entityName).append("> all = ").append(repositoryField).append(".findAll();\n");
         test.append("\n");
 
-        test.append("        // Assert\n");
         test.append("        assertThat(all).isNotEmpty();\n");
         test.append("        assertThat(all).hasSizeGreaterThanOrEqualTo(2);\n");
         test.append("    }\n");
@@ -273,18 +258,15 @@ public class RepositoryTestGenerator implements TestGenerator {
 
         test.append("    @Test\n");
         test.append("    void testDelete() {\n");
-        test.append("        // Arrange\n");
         test.append("        ").append(entityName).append(" entity = new ").append(entityName).append("();\n");
         test.append("        entityManager.persistAndFlush(entity);\n");
         test.append("        Long id = entity.getId();\n");
         test.append("\n");
 
-        test.append("        // Act\n");
         test.append("        ").append(repositoryField).append(".deleteById(id);\n");
         test.append("        entityManager.flush();\n");
         test.append("\n");
 
-        test.append("        // Assert\n");
         test.append("        Optional<").append(entityName).append("> deleted = ").append(repositoryField).append(".findById(id);\n");
         test.append("        assertThat(deleted).isEmpty();\n");
         test.append("    }\n");
@@ -300,11 +282,8 @@ public class RepositoryTestGenerator implements TestGenerator {
 
         test.append("    @Test\n");
         test.append("    void ").append(testMethodName).append("() {\n");
-        test.append("        // Arrange\n");
-        test.append("        // Setup test data\n");
         test.append("\n");
 
-        test.append("        // Act\n");
         String methodCall = generateMethodCall(repositoryField, methodInfo);
         if (!methodInfo.returnsVoid()) {
             test.append("        ").append(methodInfo.returnType()).append(" result = ").append(methodCall).append(";\n");
@@ -313,7 +292,6 @@ public class RepositoryTestGenerator implements TestGenerator {
         }
         test.append("\n");
 
-        test.append("        // Assert\n");
         if (!methodInfo.returnsVoid()) {
             test.append("        ").append(assertionGenerator.generateMethodAssertions(methodInfo).replace("\n", "\n        ")).append("\n");
         }

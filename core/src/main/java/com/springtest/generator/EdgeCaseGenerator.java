@@ -61,12 +61,10 @@ public class EdgeCaseGenerator {
 
         test.append("    @Test\n");
         test.append("    void ").append(testName).append("() {\n");
-        test.append("        // Arrange - null ").append(param.name()).append("\n");
 
         List<String> args = buildArgumentsWithNullAt(methodInfo.parameters(), paramIndex);
 
         test.append("\n");
-        test.append("        // Act & Assert\n");
 
         if (param.required() || methodInfo.hasValidation()) {
 
@@ -114,12 +112,10 @@ public class EdgeCaseGenerator {
 
         test.append("    @Test\n");
         test.append("    void ").append(testName).append("() {\n");
-        test.append("        // Arrange - empty ").append(param.name()).append("\n");
 
         List<String> args = buildArgumentsWithValueAt(methodInfo.parameters(), paramIndex, "\"\"");
 
         test.append("\n");
-        test.append("        // Act & Assert\n");
 
         if (param.required() || methodInfo.hasValidation()) {
             test.append("        assertThatThrownBy(() -> ");
@@ -147,13 +143,11 @@ public class EdgeCaseGenerator {
 
         test.append("    @Test\n");
         test.append("    void ").append(testName).append("() {\n");
-        test.append("        // Arrange - empty ").append(param.name()).append("\n");
 
         String emptyValue = getEmptyCollectionValue(param.type());
         List<String> args = buildArgumentsWithValueAt(methodInfo.parameters(), paramIndex, emptyValue);
 
         test.append("\n");
-        test.append("        // Act & Assert\n");
         test.append("        assertThatCode(() -> ");
         test.append(instanceName).append(".").append(methodInfo.name());
         test.append("(").append(String.join(", ", args)).append("))\n");
@@ -210,12 +204,10 @@ public class EdgeCaseGenerator {
 
         test.append("    @Test\n");
         test.append("    void ").append(testName).append("() {\n");
-        test.append("        // Arrange - ").append(boundaryName).append(" value for ").append(param.name()).append("\n");
 
         List<String> args = buildArgumentsWithValueAt(methodInfo.parameters(), paramIndex, value);
 
         test.append("\n");
-        test.append("        // Act & Assert\n");
         test.append("        assertThatCode(() -> ");
         test.append(instanceName).append(".").append(methodInfo.name());
         test.append("(").append(String.join(", ", args)).append("))\n");
@@ -251,13 +243,11 @@ public class EdgeCaseGenerator {
 
         test.append("    @Test\n");
         test.append("    void ").append(testName).append("() {\n");
-        test.append("        // Arrange - invalid format for ").append(param.name()).append("\n");
 
         String invalidValue = getInvalidValue(param);
         List<String> args = buildArgumentsWithValueAt(methodInfo.parameters(), paramIndex, invalidValue);
 
         test.append("\n");
-        test.append("        // Act & Assert\n");
         test.append("        assertThatThrownBy(() -> ");
         test.append(instanceName).append(".").append(methodInfo.name());
         test.append("(").append(String.join(", ", args)).append("))\n");

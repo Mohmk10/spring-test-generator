@@ -71,33 +71,19 @@ class ${className}IntegrationTest {
     @Test
     void testIntegration_${method.nameCapitalized}() {
 <#if useRestTemplate>
-        // Arrange
         String url = "http://localhost:" + port + "${method.path}";
-
-        // Act
         ResponseEntity<${method.responseType}> response = restTemplate.getForEntity(url, ${method.responseType}.class);
-
-        // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 <#if !method.returnsVoid>
         assertThat(response.getBody()).isNotNull();
 </#if>
 <#else>
-        // Arrange
-        // TODO: Setup test data
-
-        // Act
 <#if method.returnsVoid>
         ${instanceName}.${method.name}(${method.args});
 <#else>
         ${method.returnType} result = ${instanceName}.${method.name}(${method.args});
-</#if>
-
-        // Assert
-<#if !method.returnsVoid>
         assertThat(result).isNotNull();
 </#if>
-        // TODO: Add more assertions
 </#if>
     }
 
@@ -105,7 +91,6 @@ class ${className}IntegrationTest {
 <#else>
     @Test
     void testIntegrationContextLoads() {
-        // Assert
         assertThat(${instanceName}).isNotNull();
     }
 </#if>

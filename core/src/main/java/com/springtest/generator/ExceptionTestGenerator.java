@@ -43,11 +43,9 @@ public class ExceptionTestGenerator {
 
         test.append("    @Test\n");
         test.append("    void ").append(testName).append("() {\n");
-        test.append("        // Arrange - setup to trigger ").append(simpleName).append("\n");
         test.append(generateArrangeForException(methodInfo, exceptionType));
         test.append("\n");
 
-        test.append("        // Act & Assert\n");
         test.append("        assertThatThrownBy(() -> ");
         test.append(generateMethodCall(instanceName, methodInfo));
         test.append(")\n");
@@ -77,11 +75,9 @@ public class ExceptionTestGenerator {
 
         test.append("    @Test\n");
         test.append("    void ").append(testName).append("() {\n");
-        test.append("        // Arrange\n");
         test.append(generateArrangeForException(methodInfo, exceptionType));
         test.append("\n");
 
-        test.append("        // Act & Assert\n");
         test.append("        assertThatThrownBy(() -> ");
         test.append(generateMethodCall(instanceName, methodInfo));
         test.append(")\n");
@@ -105,11 +101,9 @@ public class ExceptionTestGenerator {
 
         test.append("    @Test\n");
         test.append("    void ").append(testName).append("() {\n");
-        test.append("        // Arrange - setup to trigger ").append(simpleName).append(" with cause\n");
         test.append(generateArrangeForException(methodInfo, exceptionType));
         test.append("\n");
 
-        test.append("        // Act & Assert\n");
         test.append("        assertThatThrownBy(() -> ");
         test.append(generateMethodCall(instanceName, methodInfo));
         test.append(")\n");
@@ -135,11 +129,8 @@ public class ExceptionTestGenerator {
 
         test.append("    @Test\n");
         test.append("    void ").append(testName).append("() {\n");
-        test.append("        // This method can throw multiple exceptions\n");
-        test.append("        // Test with different scenarios to verify correct exception is thrown\n");
         test.append("\n");
 
-        test.append("        // Scenario 1: Invalid input\n");
         test.append("        assertThatThrownBy(() -> ");
         test.append(generateMethodCall(instanceName, methodInfo));
         test.append(")\n");
@@ -168,15 +159,10 @@ public class ExceptionTestGenerator {
         String simpleName = getSimpleName(exceptionType);
 
         if (simpleName.contains("NotFound") || simpleName.contains("NoSuchElement")) {
-            arrange.append("        // Setup: Use non-existent ID to trigger ").append(simpleName).append("\n");
         } else if (simpleName.contains("IllegalArgument") || simpleName.contains("Validation")) {
-            arrange.append("        // Setup: Use invalid arguments to trigger ").append(simpleName).append("\n");
         } else if (simpleName.contains("IllegalState")) {
-            arrange.append("        // Setup: Put object in invalid state to trigger ").append(simpleName).append("\n");
         } else if (simpleName.contains("NullPointer")) {
-            arrange.append("        // Setup: Use null values to trigger ").append(simpleName).append("\n");
         } else {
-            arrange.append("        // Setup: Configure scenario to trigger ").append(simpleName).append("\n");
         }
 
         return arrange.toString();

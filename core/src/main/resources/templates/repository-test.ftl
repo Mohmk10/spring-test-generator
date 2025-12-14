@@ -51,64 +51,41 @@ class ${className}Test {
 
     @Test
     void testSave() {
-        // Arrange
         ${entityName} entity = new ${entityName}();
-        // TODO: Set entity properties
-
-        // Act
         ${entityName} saved = ${repositoryFieldName}.save(entity);
-
-        // Assert
         assertThat(saved).isNotNull();
         assertThat(saved.getId()).isNotNull();
-        // TODO: Add more assertions
     }
 
     @Test
     void testFindById() {
-        // Arrange
         ${entityName} entity = new ${entityName}();
-        // TODO: Set entity properties
         entityManager.persistAndFlush(entity);
         Long id = entity.getId();
-
-        // Act
         Optional<${entityName}> found = ${repositoryFieldName}.findById(id);
-
-        // Assert
         assertThat(found).isPresent();
         assertThat(found.get().getId()).isEqualTo(id);
     }
 
     @Test
     void testFindAll() {
-        // Arrange
         ${entityName} entity1 = new ${entityName}();
         ${entityName} entity2 = new ${entityName}();
         entityManager.persist(entity1);
         entityManager.persist(entity2);
         entityManager.flush();
-
-        // Act
         List<${entityName}> all = ${repositoryFieldName}.findAll();
-
-        // Assert
         assertThat(all).isNotEmpty();
         assertThat(all).hasSizeGreaterThanOrEqualTo(2);
     }
 
     @Test
     void testDelete() {
-        // Arrange
         ${entityName} entity = new ${entityName}();
         entityManager.persistAndFlush(entity);
         Long id = entity.getId();
-
-        // Act
         ${repositoryFieldName}.deleteById(id);
         entityManager.flush();
-
-        // Assert
         Optional<${entityName}> deleted = ${repositoryFieldName}.findById(id);
         assertThat(deleted).isEmpty();
     }
@@ -116,21 +93,12 @@ class ${className}Test {
 <#list customMethods as method>
     @Test
     void test${method.nameCapitalized}() {
-        // Arrange
-        // TODO: Setup test data
-
-        // Act
 <#if method.returnsVoid>
         ${repositoryFieldName}.${method.name}(${method.args});
 <#else>
         ${method.returnType} result = ${repositoryFieldName}.${method.name}(${method.args});
-</#if>
-
-        // Assert
-<#if !method.returnsVoid>
         assertThat(result).isNotNull();
 </#if>
-        // TODO: Add assertions
     }
 
 </#list>

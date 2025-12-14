@@ -218,16 +218,13 @@ public class IntegrationTestGenerator implements TestGenerator {
         test.append("    @Test\n");
         test.append("    void ").append(testMethodName).append("() {\n");
 
-        test.append("        // Arrange\n");
         test.append("        String url = \"http://localhost:\" + port + \"/").append(methodInfo.name()).append("\";\n");
         test.append("\n");
 
-        test.append("        // Act\n");
         String responseType = methodInfo.returnsVoid() ? "Void" : methodInfo.returnType();
         test.append("        ResponseEntity<").append(responseType).append("> response = restTemplate.getForEntity(url, ").append(responseType).append(".class);\n");
         test.append("\n");
 
-        test.append("        // Assert\n");
         test.append("        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);\n");
         if (!methodInfo.returnsVoid()) {
             test.append("        assertThat(response.getBody()).isNotNull();\n");
@@ -267,11 +264,8 @@ public class IntegrationTestGenerator implements TestGenerator {
         test.append("    @Test\n");
         test.append("    void ").append(testMethodName).append("() {\n");
 
-        test.append("        // Arrange\n");
-        test.append("        // Setup test data\n");
         test.append("\n");
 
-        test.append("        // Act\n");
         String instanceName = getInstanceName(classInfo);
         String methodCall = generateMethodCall(instanceName, methodInfo);
 
@@ -282,11 +276,9 @@ public class IntegrationTestGenerator implements TestGenerator {
         }
         test.append("\n");
 
-        test.append("        // Assert\n");
         if (!methodInfo.returnsVoid()) {
             test.append("        ").append(assertionGenerator.generateMethodAssertions(methodInfo).replace("\n", "\n        ")).append("\n");
         } else {
-            test.append("        // Verify expected behavior\n");
         }
 
         test.append("    }\n");
@@ -299,8 +291,6 @@ public class IntegrationTestGenerator implements TestGenerator {
 
         tests.append("    @Test\n");
         tests.append("    void testIntegration_SaveAndFind() {\n");
-        tests.append("        // This is a basic integration test\n");
-        tests.append("        // Add specific repository operations\n");
         String instanceName = getInstanceName(classInfo);
         tests.append("        assertThat(").append(instanceName).append(").isNotNull();\n");
         tests.append("    }\n");
@@ -313,7 +303,6 @@ public class IntegrationTestGenerator implements TestGenerator {
 
         test.append("    @Test\n");
         test.append("    void testIntegrationContextLoads() {\n");
-        test.append("        // Verify that the Spring context loads successfully\n");
         String instanceName = getInstanceName(classInfo);
         test.append("        assertThat(").append(instanceName).append(").isNotNull();\n");
         test.append("    }\n");

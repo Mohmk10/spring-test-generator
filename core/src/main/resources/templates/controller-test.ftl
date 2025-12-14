@@ -41,12 +41,6 @@ class ${className}Test {
 <#list webMethods as method>
     @Test
     void test${method.nameCapitalized}() throws Exception {
-        // Arrange
-<#list injectedFields as field>
-        // TODO: Setup mock behavior for ${field.name}
-</#list>
-
-        // Act & Assert
         mockMvc.perform(${method.httpMethod?lower_case}("${method.path}")
 <#if method.httpMethod == "POST" || method.httpMethod == "PUT" || method.httpMethod == "PATCH">
                 .contentType(MediaType.APPLICATION_JSON)
@@ -61,10 +55,6 @@ class ${className}Test {
 
     @Test
     void test${method.nameCapitalized}_ReturnsError() throws Exception {
-        // Arrange
-        // TODO: Setup mocks to cause error
-
-        // Act & Assert
         mockMvc.perform(${method.httpMethod?lower_case}("${method.path}")
 <#if method.httpMethod == "POST" || method.httpMethod == "PUT" || method.httpMethod == "PATCH">
                 .contentType(MediaType.APPLICATION_JSON)

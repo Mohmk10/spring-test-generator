@@ -167,11 +167,9 @@ public class ControllerTestGenerator implements TestGenerator {
         test.append("    @Test\n");
         test.append("    void ").append(testMethodName).append("() throws Exception {\n");
 
-        test.append("        // Arrange\n");
         test.append(generateWebArrangeSection(classInfo, methodInfo));
         test.append("\n");
 
-        test.append("        // Act & Assert\n");
         test.append(generateMockMvcPerform(httpMethod, path, methodInfo));
 
         test.append("    }\n");
@@ -185,12 +183,6 @@ public class ControllerTestGenerator implements TestGenerator {
         String testMethodName = "test" + capitalize(methodInfo.name()) + "_ReturnsError";
         test.append("    @Test\n");
         test.append("    void ").append(testMethodName).append("() throws Exception {\n");
-
-        test.append("        // Arrange - setup for error scenario\n");
-        test.append("        // when(mockService.someMethod(any())).thenThrow(new RuntimeException(\"Error\"));\n");
-        test.append("\n");
-
-        test.append("        // Act & Assert\n");
         test.append(generateMockMvcPerformError(httpMethod, path, methodInfo));
 
         test.append("    }\n");
@@ -203,7 +195,6 @@ public class ControllerTestGenerator implements TestGenerator {
 
         for (FieldInfo field : classInfo.getInjectedFields()) {
             String mockName = field.name();
-            arrange.append("        // Setup mock for ").append(mockName).append("\n");
 
             if (!methodInfo.returnsVoid()) {
                 String defaultValue = getDefaultValue(methodInfo.returnType());
@@ -221,7 +212,7 @@ public class ControllerTestGenerator implements TestGenerator {
 
         if (httpMethod.equals("POST") || httpMethod.equals("PUT") || httpMethod.equals("PATCH")) {
             perform.append("                .contentType(MediaType.APPLICATION_JSON)\n");
-            perform.append("                .content(\"{}\") // Add JSON payload\n");
+            perform.append("                .content(\"{}\")\n");
         }
 
         perform.append("                .accept(MediaType.APPLICATION_JSON))\n");
@@ -245,7 +236,7 @@ public class ControllerTestGenerator implements TestGenerator {
 
         if (httpMethod.equals("POST") || httpMethod.equals("PUT") || httpMethod.equals("PATCH")) {
             perform.append("                .contentType(MediaType.APPLICATION_JSON)\n");
-            perform.append("                .content(\"{}\") // Add invalid JSON payload\n");
+            perform.append("                .content(\"{}\")\n");
         }
 
         perform.append("                .accept(MediaType.APPLICATION_JSON))\n");
@@ -260,8 +251,6 @@ public class ControllerTestGenerator implements TestGenerator {
 
         test.append("    @Test\n");
         test.append("    void testControllerInitialization() {\n");
-        test.append("        // Verify that MockMvc is properly initialized\n");
-        test.append("        // assertThat(mockMvc).isNotNull();\n");
         test.append("    }\n");
 
         return test.toString();
