@@ -9,33 +9,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Generates exception test methods for methods that throw exceptions.
- * Creates tests using assertThatThrownBy() for each declared and possible exception.
- */
 public class ExceptionTestGenerator {
     private static final Logger logger = LoggerFactory.getLogger(ExceptionTestGenerator.class);
 
-    /**
-     * Generates all exception test methods for a given method.
-     *
-     * @param methodInfo   Information about the method
-     * @param instanceName Name of the instance to call the method on
-     * @return List of test method strings
-     */
     public List<String> generateExceptionTests(MethodInfo methodInfo, String instanceName) {
         logger.debug("Generating exception tests for method: {}", methodInfo.name());
 
         List<String> testMethods = new ArrayList<>();
 
-        // Generate tests for declared exceptions (throws clause)
         for (String exception : methodInfo.thrownExceptions()) {
             testMethods.add(generateExceptionTest(methodInfo, instanceName, exception, true));
         }
 
-        // Generate tests for possible exceptions (inferred from method body)
         for (String exception : methodInfo.possibleExceptions()) {
-            // Don't duplicate if already in thrownExceptions
+
             if (!methodInfo.thrownExceptions().contains(exception)) {
                 testMethods.add(generateExceptionTest(methodInfo, instanceName, exception, false));
             }
@@ -44,15 +31,6 @@ public class ExceptionTestGenerator {
         return testMethods;
     }
 
-    /**
-     * Generates a single exception test method.
-     *
-     * @param methodInfo   Method information
-     * @param instanceName Instance name
-     * @param exceptionType Exception type to test
-     * @param isDeclared   Whether the exception is declared in throws clause
-     * @return Test method as a string
-     */
     public String generateExceptionTest(MethodInfo methodInfo, String instanceName, String exceptionType, boolean isDeclared) {
         logger.debug("Generating exception test for {} throwing {}", methodInfo.name(), exceptionType);
 
@@ -75,11 +53,9 @@ public class ExceptionTestGenerator {
         test.append(")\n");
         test.append("            .isInstanceOf(").append(exceptionType).append(".class)");
 
-        // Add message assertion
         test.append("\n");
         test.append("            .hasMessageContaining(\"").append(getExpectedMessage(exceptionType)).append("\")");
 
-        // Add cause assertion if relevant
         if (hasCommonCause(exceptionType)) {
             test.append("\n");
             test.append("            .hasCauseInstanceOf(").append(getCommonCause(exceptionType)).append(".class)");
@@ -91,14 +67,6 @@ public class ExceptionTestGenerator {
         return test.toString();
     }
 
-    /**
-     * Generates a test that verifies exception message.
-     *
-     * @param methodInfo    Method information
-     * @param instanceName  Instance name
-     * @param exceptionType Exception type
-     * @return Test method as a string
-     */
     public String generateExceptionMessageTest(MethodInfo methodInfo, String instanceName, String exceptionType) {
         StringBuilder test = new StringBuilder();
 
@@ -126,15 +94,6 @@ public class ExceptionTestGenerator {
         return test.toString();
     }
 
-    /**
-     * Generates a test that verifies exception cause.
-     *
-     * @param methodInfo    Method information
-     * @param instanceName  Instance name
-     * @param exceptionType Exception type
-     * @param causeType     Expected cause type
-     * @return Test method as a string
-     */
     public String generateExceptionCauseTest(MethodInfo methodInfo, String instanceName, String exceptionType, String causeType) {
         StringBuilder test = new StringBuilder();
 
@@ -164,13 +123,6 @@ public class ExceptionTestGenerator {
         return test.toString();
     }
 
-    /**
-     * Generates a test for multiple exceptions.
-     *
-     * @param methodInfo   Method information
-     * @param instanceName Instance name
-     * @return Test method as a string
-     */
     public String generateMultipleExceptionsTest(MethodInfo methodInfo, String instanceName) {
         if (methodInfo.thrownExceptions().isEmpty() && methodInfo.possibleExceptions().isEmpty()) {
             return "";
@@ -210,13 +162,9 @@ public class ExceptionTestGenerator {
         return test.toString();
     }
 
-    /**
-     * Generates arrange section for exception tests.
-     */
     private String generateArrangeForException(MethodInfo methodInfo, String exceptionType) {
         StringBuilder arrange = new StringBuilder();
 
-        // Add setup comments based on exception type
         String simpleName = getSimpleName(exceptionType);
 
         if (simpleName.contains("NotFound") || simpleName.contains("NoSuchElement")) {
@@ -234,9 +182,6 @@ public class ExceptionTestGenerator {
         return arrange.toString();
     }
 
-    /**
-     * Generates a method call with appropriate arguments.
-     */
     private String generateMethodCall(String instanceName, MethodInfo methodInfo) {
         if (methodInfo.parameters().isEmpty()) {
             return instanceName + "." + methodInfo.name() + "()";
@@ -249,11 +194,8 @@ public class ExceptionTestGenerator {
         return instanceName + "." + methodInfo.name() + "(" + args + ")";
     }
 
-    /**
-     * Gets a value that might trigger an exception.
-     */
     private String getExceptionTriggeringValue(ParameterInfo param) {
-        // Use values that are likely to cause exceptions
+
         if (param.required()) {
             return "null";
         }
@@ -271,9 +213,6 @@ public class ExceptionTestGenerator {
         };
     }
 
-    /**
-     * Gets the simple name from a fully qualified exception name.
-     */
     private String getSimpleName(String qualifiedName) {
         if (qualifiedName.contains(".")) {
             return qualifiedName.substring(qualifiedName.lastIndexOf('.') + 1);
@@ -281,9 +220,6 @@ public class ExceptionTestGenerator {
         return qualifiedName;
     }
 
-    /**
-     * Gets an expected message for an exception type.
-     */
     private String getExpectedMessage(String exceptionType) {
         String simpleName = getSimpleName(exceptionType);
 
@@ -299,9 +235,6 @@ public class ExceptionTestGenerator {
         };
     }
 
-    /**
-     * Checks if an exception type commonly has a cause.
-     */
     private boolean hasCommonCause(String exceptionType) {
         String simpleName = getSimpleName(exceptionType);
         return simpleName.contains("Wrapped") ||
@@ -310,9 +243,6 @@ public class ExceptionTestGenerator {
                simpleName.equals("ServiceException");
     }
 
-    /**
-     * Gets a common cause type for an exception.
-     */
     private String getCommonCause(String exceptionType) {
         String simpleName = getSimpleName(exceptionType);
 
@@ -325,9 +255,6 @@ public class ExceptionTestGenerator {
         return "Exception";
     }
 
-    /**
-     * Capitalizes the first letter of a string.
-     */
     private String capitalize(String str) {
         if (str == null || str.isEmpty()) {
             return str;
@@ -335,11 +262,6 @@ public class ExceptionTestGenerator {
         return Character.toUpperCase(str.charAt(0)) + str.substring(1);
     }
 
-    /**
-     * Generates required imports for exception tests.
-     *
-     * @return List of import statements
-     */
     public List<String> generateImports() {
         List<String> imports = new ArrayList<>();
         imports.add("import static org.assertj.core.api.Assertions.*;");
@@ -348,12 +270,6 @@ public class ExceptionTestGenerator {
         return imports;
     }
 
-    /**
-     * Checks if a method has any exceptions to test.
-     *
-     * @param methodInfo Method information
-     * @return true if the method has exceptions
-     */
     public boolean hasExceptionsToTest(MethodInfo methodInfo) {
         return !methodInfo.thrownExceptions().isEmpty() || !methodInfo.possibleExceptions().isEmpty();
     }

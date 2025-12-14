@@ -12,10 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Generates integration tests using @SpringBootTest.
- * Creates end-to-end tests that load the full Spring application context.
- */
 public class IntegrationTestGenerator implements TestGenerator {
     private static final Logger logger = LoggerFactory.getLogger(IntegrationTestGenerator.class);
 
@@ -23,32 +19,16 @@ public class IntegrationTestGenerator implements TestGenerator {
     private final boolean useTestContainers;
     private final boolean useRestTemplate;
 
-    /**
-     * Creates an IntegrationTestGenerator with default configuration.
-     */
     public IntegrationTestGenerator() {
         this(true, false);
     }
 
-    /**
-     * Creates an IntegrationTestGenerator with specified configuration.
-     *
-     * @param useTestContainers If true, generates tests with TestContainers
-     * @param useRestTemplate   If true, uses RestTemplate for HTTP testing
-     */
     public IntegrationTestGenerator(boolean useTestContainers, boolean useRestTemplate) {
         this.assertionGenerator = new AssertionGenerator();
         this.useTestContainers = useTestContainers;
         this.useRestTemplate = useRestTemplate;
     }
 
-    /**
-     * Creates an IntegrationTestGenerator with custom assertion generator.
-     *
-     * @param assertionGenerator Assertion generator instance
-     * @param useTestContainers  If true, generates tests with TestContainers
-     * @param useRestTemplate    If true, uses RestTemplate for HTTP testing
-     */
     public IntegrationTestGenerator(AssertionGenerator assertionGenerator, boolean useTestContainers, boolean useRestTemplate) {
         this.assertionGenerator = assertionGenerator;
         this.useTestContainers = useTestContainers;
@@ -65,27 +45,21 @@ public class IntegrationTestGenerator implements TestGenerator {
 
         StringBuilder testClass = new StringBuilder();
 
-        // Package declaration
         testClass.append(generatePackageDeclaration(classInfo));
         testClass.append("\n\n");
 
-        // Imports
         testClass.append(generateImports(classInfo));
         testClass.append("\n\n");
 
-        // Class declaration
         testClass.append(generateClassDeclaration(classInfo));
         testClass.append("\n\n");
 
-        // Fields
         testClass.append(generateFields(classInfo));
         testClass.append("\n\n");
 
-        // Test methods
         testClass.append(generateTestMethods(classInfo));
         testClass.append("\n");
 
-        // Close class
         testClass.append("}\n");
 
         return testClass.toString();
@@ -93,32 +67,23 @@ public class IntegrationTestGenerator implements TestGenerator {
 
     @Override
     public boolean supports(ClassInfo classInfo) {
-        // Integration tests can be generated for any Spring component
+
         return classInfo != null && classInfo.isSpringComponent();
     }
 
-    /**
-     * Generates the package declaration.
-     */
     private String generatePackageDeclaration(ClassInfo classInfo) {
         return "package " + classInfo.packageName() + ";";
     }
 
-    /**
-     * Generates all required imports.
-     */
     private String generateImports(ClassInfo classInfo) {
         List<String> imports = new ArrayList<>();
 
-        // JUnit imports
         imports.add("import org.junit.jupiter.api.Test;");
         imports.add("import org.junit.jupiter.api.BeforeEach;");
 
-        // Spring Boot Test imports
         imports.add("import org.springframework.beans.factory.annotation.Autowired;");
         imports.add("import org.springframework.boot.test.context.SpringBootTest;");
 
-        // RestTemplate or TestRestTemplate imports
         if (useRestTemplate || classInfo.classType() == ClassType.CONTROLLER) {
             imports.add("import org.springframework.boot.test.web.client.TestRestTemplate;");
             imports.add("import org.springframework.boot.test.web.server.LocalServerPort;");
@@ -126,7 +91,6 @@ public class IntegrationTestGenerator implements TestGenerator {
             imports.add("import org.springframework.http.HttpStatus;");
         }
 
-        // TestContainers imports (if enabled)
         if (useTestContainers) {
             imports.add("import org.springframework.test.context.DynamicPropertyRegistry;");
             imports.add("import org.springframework.test.context.DynamicPropertySource;");
@@ -135,17 +99,13 @@ public class IntegrationTestGenerator implements TestGenerator {
             imports.add("import org.testcontainers.junit.jupiter.Testcontainers;");
         }
 
-        // AssertJ imports
         imports.add("import static org.assertj.core.api.Assertions.*;");
 
-        // Java util imports
         imports.add("import java.util.List;");
         imports.add("import java.util.Optional;");
 
-        // Import the class under test
         imports.add("import " + classInfo.qualifiedName() + ";");
 
-        // Import dependency types
         for (FieldInfo field : classInfo.getInjectedFields()) {
             if (field.qualifiedType() != null && !field.qualifiedType().startsWith("java.")) {
                 imports.add("import " + field.qualifiedType() + ";");
@@ -158,13 +118,9 @@ public class IntegrationTestGenerator implements TestGenerator {
                 .collect(Collectors.joining("\n"));
     }
 
-    /**
-     * Generates the test class declaration.
-     */
     private String generateClassDeclaration(ClassInfo classInfo) {
         StringBuilder declaration = new StringBuilder();
 
-        // Determine webEnvironment based on class type
         String webEnvironment = classInfo.classType() == ClassType.CONTROLLER
                 ? "SpringBootTest.WebEnvironment.RANDOM_PORT"
                 : "SpringBootTest.WebEnvironment.NONE";
@@ -177,7 +133,6 @@ public class IntegrationTestGenerator implements TestGenerator {
 
         declaration.append("class ").append(classInfo.simpleName()).append("IntegrationTest {\n");
 
-        // Add TestContainer configuration
         if (useTestContainers) {
             declaration.append("\n");
             declaration.append(generateTestContainerConfig());
@@ -186,9 +141,6 @@ public class IntegrationTestGenerator implements TestGenerator {
         return declaration.toString();
     }
 
-    /**
-     * Generates TestContainer configuration.
-     */
     private String generateTestContainerConfig() {
         StringBuilder config = new StringBuilder();
 
@@ -208,17 +160,12 @@ public class IntegrationTestGenerator implements TestGenerator {
         return config.toString();
     }
 
-    /**
-     * Generates field declarations.
-     */
     private String generateFields(ClassInfo classInfo) {
         StringBuilder fields = new StringBuilder();
 
-        // Add @Autowired field for the class under test
         fields.append("    @Autowired\n");
         fields.append("    private ").append(classInfo.simpleName()).append(" ").append(getInstanceName(classInfo)).append(";\n");
 
-        // Add RestTemplate for controllers
         if (useRestTemplate || classInfo.classType() == ClassType.CONTROLLER) {
             fields.append("\n");
             fields.append("    @Autowired\n");
@@ -231,9 +178,6 @@ public class IntegrationTestGenerator implements TestGenerator {
         return fields.toString();
     }
 
-    /**
-     * Generates all test methods.
-     */
     private String generateTestMethods(ClassInfo classInfo) {
         StringBuilder methods = new StringBuilder();
 
@@ -250,9 +194,6 @@ public class IntegrationTestGenerator implements TestGenerator {
         return methods.toString();
     }
 
-    /**
-     * Generates integration tests for controllers.
-     */
     private String generateControllerIntegrationTests(ClassInfo classInfo) {
         StringBuilder tests = new StringBuilder();
 
@@ -263,7 +204,6 @@ public class IntegrationTestGenerator implements TestGenerator {
             tests.append("\n");
         }
 
-        // If no web methods, generate basic test
         if (webMethods.isEmpty()) {
             tests.append(generateGenericIntegrationTest(classInfo));
         }
@@ -271,9 +211,6 @@ public class IntegrationTestGenerator implements TestGenerator {
         return tests.toString();
     }
 
-    /**
-     * Generates a REST template test for a web endpoint.
-     */
     private String generateRestTemplateTest(ClassInfo classInfo, MethodInfo methodInfo) {
         StringBuilder test = new StringBuilder();
 
@@ -301,9 +238,6 @@ public class IntegrationTestGenerator implements TestGenerator {
         return test.toString();
     }
 
-    /**
-     * Generates integration tests for services.
-     */
     private String generateServiceIntegrationTests(ClassInfo classInfo) {
         StringBuilder tests = new StringBuilder();
 
@@ -311,7 +245,7 @@ public class IntegrationTestGenerator implements TestGenerator {
                 .filter(m -> !m.isStatic())
                 .filter(m -> !m.isGetter())
                 .filter(m -> !m.isSetter())
-                .limit(3) // Generate for first 3 methods
+                .limit(3)
                 .toList();
 
         for (MethodInfo method : publicMethods) {
@@ -326,9 +260,6 @@ public class IntegrationTestGenerator implements TestGenerator {
         return tests.toString();
     }
 
-    /**
-     * Generates an integration test for a service method.
-     */
     private String generateServiceIntegrationTest(ClassInfo classInfo, MethodInfo methodInfo) {
         StringBuilder test = new StringBuilder();
 
@@ -363,9 +294,6 @@ public class IntegrationTestGenerator implements TestGenerator {
         return test.toString();
     }
 
-    /**
-     * Generates integration tests for repositories.
-     */
     private String generateRepositoryIntegrationTests(ClassInfo classInfo) {
         StringBuilder tests = new StringBuilder();
 
@@ -380,9 +308,6 @@ public class IntegrationTestGenerator implements TestGenerator {
         return tests.toString();
     }
 
-    /**
-     * Generates a generic integration test.
-     */
     private String generateGenericIntegrationTest(ClassInfo classInfo) {
         StringBuilder test = new StringBuilder();
 
@@ -396,9 +321,6 @@ public class IntegrationTestGenerator implements TestGenerator {
         return test.toString();
     }
 
-    /**
-     * Generates a method call string.
-     */
     private String generateMethodCall(String instanceName, MethodInfo methodInfo) {
         if (methodInfo.parameters().isEmpty()) {
             return instanceName + "." + methodInfo.name() + "()";
@@ -411,17 +333,11 @@ public class IntegrationTestGenerator implements TestGenerator {
         return instanceName + "." + methodInfo.name() + "(" + args + ")";
     }
 
-    /**
-     * Gets the instance name for the class under test.
-     */
     private String getInstanceName(ClassInfo classInfo) {
         String simpleName = classInfo.simpleName();
         return Character.toLowerCase(simpleName.charAt(0)) + simpleName.substring(1);
     }
 
-    /**
-     * Capitalizes the first letter of a string.
-     */
     private String capitalize(String str) {
         if (str == null || str.isEmpty()) {
             return str;
@@ -429,9 +345,6 @@ public class IntegrationTestGenerator implements TestGenerator {
         return Character.toUpperCase(str.charAt(0)) + str.substring(1);
     }
 
-    /**
-     * Gets a default value for a parameter type.
-     */
     private String getDefaultValue(String type) {
         return switch (type) {
             case "String" -> "\"test\"";

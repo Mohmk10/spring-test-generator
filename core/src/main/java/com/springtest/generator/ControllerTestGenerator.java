@@ -16,10 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Generates tests for Spring @Controller and @RestController classes using @WebMvcTest.
- * Creates tests with MockMvc for testing web endpoints.
- */
 public class ControllerTestGenerator implements TestGenerator {
     private static final Logger logger = LoggerFactory.getLogger(ControllerTestGenerator.class);
 
@@ -27,22 +23,12 @@ public class ControllerTestGenerator implements TestGenerator {
     private final StubGenerator stubGenerator;
     private final AssertionGenerator assertionGenerator;
 
-    /**
-     * Creates a ControllerTestGenerator with default configuration.
-     */
     public ControllerTestGenerator() {
-        this.mockGenerator = new MockGenerator(true); // Use @MockBean for Spring context
+        this.mockGenerator = new MockGenerator(true);
         this.stubGenerator = new StubGenerator();
         this.assertionGenerator = new AssertionGenerator();
     }
 
-    /**
-     * Creates a ControllerTestGenerator with custom generators.
-     *
-     * @param mockGenerator      Mock generator instance
-     * @param stubGenerator      Stub generator instance
-     * @param assertionGenerator Assertion generator instance
-     */
     public ControllerTestGenerator(MockGenerator mockGenerator, StubGenerator stubGenerator, AssertionGenerator assertionGenerator) {
         this.mockGenerator = mockGenerator;
         this.stubGenerator = stubGenerator;
@@ -62,31 +48,24 @@ public class ControllerTestGenerator implements TestGenerator {
 
         StringBuilder testClass = new StringBuilder();
 
-        // Package declaration
         testClass.append(generatePackageDeclaration(classInfo));
         testClass.append("\n\n");
 
-        // Imports
         testClass.append(generateImports(classInfo));
         testClass.append("\n\n");
 
-        // Class declaration
         testClass.append(generateClassDeclaration(classInfo));
         testClass.append("\n\n");
 
-        // MockMvc field
         testClass.append(generateMockMvcField());
         testClass.append("\n\n");
 
-        // Mock fields
         testClass.append(generateMockFields(classInfo));
         testClass.append("\n\n");
 
-        // Test methods
         testClass.append(generateTestMethods(classInfo));
         testClass.append("\n");
 
-        // Close class
         testClass.append("}\n");
 
         return testClass.toString();
@@ -97,48 +76,34 @@ public class ControllerTestGenerator implements TestGenerator {
         return classInfo != null && classInfo.classType() == ClassType.CONTROLLER;
     }
 
-    /**
-     * Generates the package declaration.
-     */
     private String generatePackageDeclaration(ClassInfo classInfo) {
         return "package " + classInfo.packageName() + ";";
     }
 
-    /**
-     * Generates all required imports.
-     */
     private String generateImports(ClassInfo classInfo) {
         List<String> imports = new ArrayList<>();
 
-        // JUnit imports
         imports.add("import org.junit.jupiter.api.Test;");
 
-        // Spring Boot Test imports
         imports.add("import org.springframework.beans.factory.annotation.Autowired;");
         imports.add("import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;");
         imports.add("import org.springframework.boot.test.mock.mockito.MockBean;");
         imports.add("import org.springframework.test.web.servlet.MockMvc;");
 
-        // MockMvc imports
         imports.add("import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;");
         imports.add("import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;");
         imports.add("import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;");
 
-        // Mockito imports
         imports.add("import static org.mockito.Mockito.*;");
         imports.add("import static org.mockito.ArgumentMatchers.*;");
 
-        // Media type for JSON
         imports.add("import org.springframework.http.MediaType;");
 
-        // Java util imports
         imports.add("import java.util.List;");
         imports.add("import java.util.Optional;");
 
-        // Import the class under test
         imports.add("import " + classInfo.qualifiedName() + ";");
 
-        // Import dependency types
         for (FieldInfo field : classInfo.getInjectedFields()) {
             if (field.qualifiedType() != null && !field.qualifiedType().startsWith("java.")) {
                 imports.add("import " + field.qualifiedType() + ";");
@@ -151,29 +116,19 @@ public class ControllerTestGenerator implements TestGenerator {
                 .collect(Collectors.joining("\n"));
     }
 
-    /**
-     * Generates the test class declaration.
-     */
     private String generateClassDeclaration(ClassInfo classInfo) {
         return String.format("@WebMvcTest(%s.class)\nclass %sTest {",
                 classInfo.simpleName(),
                 classInfo.simpleName());
     }
 
-    /**
-     * Generates the MockMvc field.
-     */
     private String generateMockMvcField() {
         return "    @Autowired\n    private MockMvc mockMvc;";
     }
 
-    /**
-     * Generates mock field declarations.
-     */
     private String generateMockFields(ClassInfo classInfo) {
         StringBuilder fields = new StringBuilder();
 
-        // Generate @MockBean fields for dependencies
         for (FieldInfo field : classInfo.getInjectedFields()) {
             fields.append("    @MockBean\n");
             fields.append("    private ").append(field.type()).append(" ").append(field.name()).append(";\n\n");
@@ -182,9 +137,6 @@ public class ControllerTestGenerator implements TestGenerator {
         return fields.toString().trim();
     }
 
-    /**
-     * Generates all test methods for web mapping methods in the controller.
-     */
     private String generateTestMethods(ClassInfo classInfo) {
         StringBuilder methods = new StringBuilder();
 
@@ -197,12 +149,10 @@ public class ControllerTestGenerator implements TestGenerator {
             methods.append(generateWebTestMethod(classInfo, method, httpMethod, path));
             methods.append("\n");
 
-            // Generate error test case
             methods.append(generateWebErrorTestMethod(classInfo, method, httpMethod, path));
             methods.append("\n");
         }
 
-        // If no web mapping methods, generate a basic test
         if (webMethods.isEmpty()) {
             methods.append(generateBasicTest());
         }
@@ -210,9 +160,6 @@ public class ControllerTestGenerator implements TestGenerator {
         return methods.toString();
     }
 
-    /**
-     * Generates a test method for a web endpoint.
-     */
     private String generateWebTestMethod(ClassInfo classInfo, MethodInfo methodInfo, String httpMethod, String path) {
         StringBuilder test = new StringBuilder();
 
@@ -220,12 +167,10 @@ public class ControllerTestGenerator implements TestGenerator {
         test.append("    @Test\n");
         test.append("    void ").append(testMethodName).append("() throws Exception {\n");
 
-        // Arrange section
         test.append("        // Arrange\n");
         test.append(generateWebArrangeSection(classInfo, methodInfo));
         test.append("\n");
 
-        // Act & Assert section
         test.append("        // Act & Assert\n");
         test.append(generateMockMvcPerform(httpMethod, path, methodInfo));
 
@@ -234,9 +179,6 @@ public class ControllerTestGenerator implements TestGenerator {
         return test.toString();
     }
 
-    /**
-     * Generates a test method for error scenarios.
-     */
     private String generateWebErrorTestMethod(ClassInfo classInfo, MethodInfo methodInfo, String httpMethod, String path) {
         StringBuilder test = new StringBuilder();
 
@@ -244,12 +186,10 @@ public class ControllerTestGenerator implements TestGenerator {
         test.append("    @Test\n");
         test.append("    void ").append(testMethodName).append("() throws Exception {\n");
 
-        // Arrange section with error scenario
         test.append("        // Arrange - setup for error scenario\n");
         test.append("        // when(mockService.someMethod(any())).thenThrow(new RuntimeException(\"Error\"));\n");
         test.append("\n");
 
-        // Act & Assert section expecting error
         test.append("        // Act & Assert\n");
         test.append(generateMockMvcPerformError(httpMethod, path, methodInfo));
 
@@ -258,13 +198,9 @@ public class ControllerTestGenerator implements TestGenerator {
         return test.toString();
     }
 
-    /**
-     * Generates the Arrange section for web tests.
-     */
     private String generateWebArrangeSection(ClassInfo classInfo, MethodInfo methodInfo) {
         StringBuilder arrange = new StringBuilder();
 
-        // Generate stubs for mock dependencies
         for (FieldInfo field : classInfo.getInjectedFields()) {
             String mockName = field.name();
             arrange.append("        // Setup mock for ").append(mockName).append("\n");
@@ -278,15 +214,11 @@ public class ControllerTestGenerator implements TestGenerator {
         return arrange.toString();
     }
 
-    /**
-     * Generates MockMvc perform statement for successful scenario.
-     */
     private String generateMockMvcPerform(String httpMethod, String path, MethodInfo methodInfo) {
         StringBuilder perform = new StringBuilder();
 
         perform.append("        mockMvc.perform(").append(httpMethod.toLowerCase()).append("(\"").append(path).append("\")\n");
 
-        // Add content type for POST/PUT/PATCH
         if (httpMethod.equals("POST") || httpMethod.equals("PUT") || httpMethod.equals("PATCH")) {
             perform.append("                .contentType(MediaType.APPLICATION_JSON)\n");
             perform.append("                .content(\"{}\") // Add JSON payload\n");
@@ -296,7 +228,6 @@ public class ControllerTestGenerator implements TestGenerator {
         perform.append("            .andDo(print())\n");
         perform.append("            .andExpect(status().isOk())");
 
-        // Add response body expectations
         if (!methodInfo.returnsVoid()) {
             perform.append("\n            .andExpect(content().contentType(MediaType.APPLICATION_JSON))");
             perform.append("\n            .andExpect(jsonPath(\"$\").exists())");
@@ -307,9 +238,6 @@ public class ControllerTestGenerator implements TestGenerator {
         return perform.toString();
     }
 
-    /**
-     * Generates MockMvc perform statement for error scenario.
-     */
     private String generateMockMvcPerformError(String httpMethod, String path, MethodInfo methodInfo) {
         StringBuilder perform = new StringBuilder();
 
@@ -327,9 +255,6 @@ public class ControllerTestGenerator implements TestGenerator {
         return perform.toString();
     }
 
-    /**
-     * Generates a basic test when no web mapping methods exist.
-     */
     private String generateBasicTest() {
         StringBuilder test = new StringBuilder();
 
@@ -342,9 +267,6 @@ public class ControllerTestGenerator implements TestGenerator {
         return test.toString();
     }
 
-    /**
-     * Gets the HTTP method from method annotations.
-     */
     private String getHttpMethod(MethodInfo methodInfo) {
         for (AnnotationInfo annotation : methodInfo.annotations()) {
             String name = annotation.name();
@@ -354,16 +276,13 @@ public class ControllerTestGenerator implements TestGenerator {
             if (name.equals("DeleteMapping")) return "DELETE";
             if (name.equals("PatchMapping")) return "PATCH";
             if (name.equals("RequestMapping")) {
-                // Check method attribute in RequestMapping
-                return "GET"; // Default
+
+                return "GET";
             }
         }
-        return "GET"; // Default
+        return "GET";
     }
 
-    /**
-     * Gets the request path from annotations.
-     */
     private String getRequestPath(ClassInfo classInfo, MethodInfo methodInfo) {
         String basePath = getBasePath(classInfo);
         String methodPath = getMethodPath(methodInfo);
@@ -376,38 +295,27 @@ public class ControllerTestGenerator implements TestGenerator {
         return fullPath;
     }
 
-    /**
-     * Gets the base path from class-level @RequestMapping.
-     */
     private String getBasePath(ClassInfo classInfo) {
         for (AnnotationInfo annotation : classInfo.annotations()) {
             if (annotation.name().equals("RequestMapping")) {
-                // Extract value from annotation
-                // For now, return empty string
+
                 return "";
             }
         }
         return "";
     }
 
-    /**
-     * Gets the method path from method-level mapping annotation.
-     */
     private String getMethodPath(MethodInfo methodInfo) {
         for (AnnotationInfo annotation : methodInfo.annotations()) {
             String name = annotation.name();
             if (name.endsWith("Mapping")) {
-                // Extract value from annotation
-                // For now, return method name as path
+
                 return "/" + methodInfo.name();
             }
         }
         return "/" + methodInfo.name();
     }
 
-    /**
-     * Capitalizes the first letter of a string.
-     */
     private String capitalize(String str) {
         if (str == null || str.isEmpty()) {
             return str;
@@ -415,9 +323,6 @@ public class ControllerTestGenerator implements TestGenerator {
         return Character.toUpperCase(str.charAt(0)) + str.substring(1);
     }
 
-    /**
-     * Gets a default value for a type.
-     */
     private String getDefaultValue(String type) {
         return switch (type) {
             case "String" -> "\"test\"";

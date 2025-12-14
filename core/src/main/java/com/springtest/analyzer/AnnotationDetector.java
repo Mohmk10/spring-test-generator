@@ -13,31 +13,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-/**
- * Detects and extracts annotation information from JavaParser AST nodes.
- * Package-private utility class for internal use.
- */
 class AnnotationDetector {
     private static final Logger logger = LoggerFactory.getLogger(AnnotationDetector.class);
 
-    /**
-     * Extracts annotation information from a list of annotation expressions.
-     *
-     * @param annotations List of JavaParser annotation expressions
-     * @return List of AnnotationInfo objects
-     */
     static List<AnnotationInfo> extractAnnotations(List<AnnotationExpr> annotations) {
         return annotations.stream()
                 .map(AnnotationDetector::extractAnnotation)
                 .collect(Collectors.toList());
     }
 
-    /**
-     * Extracts annotation information from a single annotation expression.
-     *
-     * @param annotation JavaParser annotation expression
-     * @return AnnotationInfo object
-     */
     static AnnotationInfo extractAnnotation(AnnotationExpr annotation) {
         String name = annotation.getNameAsString();
         String qualifiedName = resolveQualifiedName(annotation);
@@ -47,31 +31,18 @@ class AnnotationDetector {
         return new AnnotationInfo(name, qualifiedName, attributes);
     }
 
-    /**
-     * Resolves the fully qualified name of an annotation.
-     * Attempts to resolve through the symbol solver if available.
-     *
-     * @param annotation JavaParser annotation expression
-     * @return Fully qualified annotation name
-     */
     private static String resolveQualifiedName(AnnotationExpr annotation) {
         try {
             return annotation.resolve().getQualifiedName();
         } catch (Exception e) {
-            // If resolution fails, try to infer from common Spring/Jakarta annotations
+
             String name = annotation.getNameAsString();
             return inferQualifiedName(name);
         }
     }
 
-    /**
-     * Infers the qualified name for common annotations when symbol resolution fails.
-     *
-     * @param simpleName Simple annotation name
-     * @return Inferred qualified name
-     */
     private static String inferQualifiedName(String simpleName) {
-        // Spring Framework annotations
+
         return switch (simpleName) {
             case "Service" -> "org.springframework.stereotype.Service";
             case "Controller" -> "org.springframework.stereotype.Controller";
@@ -91,7 +62,7 @@ class AnnotationDetector {
             case "RequestBody" -> "org.springframework.web.bind.annotation.RequestBody";
             case "RequestParam" -> "org.springframework.web.bind.annotation.RequestParam";
             case "PathVariable" -> "org.springframework.web.bind.annotation.PathVariable";
-            // Jakarta/Java EE validation annotations
+
             case "NotNull" -> "jakarta.validation.constraints.NotNull";
             case "NotBlank" -> "jakarta.validation.constraints.NotBlank";
             case "NotEmpty" -> "jakarta.validation.constraints.NotEmpty";
@@ -107,12 +78,6 @@ class AnnotationDetector {
         };
     }
 
-    /**
-     * Extracts attributes from an annotation.
-     *
-     * @param annotation JavaParser annotation expression
-     * @return Map of attribute names to values
-     */
     private static Map<String, Object> extractAttributes(AnnotationExpr annotation) {
         Map<String, Object> attributes = new HashMap<>();
 

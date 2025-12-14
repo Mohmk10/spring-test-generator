@@ -20,7 +20,6 @@ class ServiceTestGeneratorTest {
     void setUp() {
         generator = new ServiceTestGenerator();
 
-        // Create a sample service class
         FieldInfo repositoryField = new FieldInfo(
                 "userRepository",
                 "UserRepository",
@@ -232,7 +231,6 @@ class ServiceTestGeneratorTest {
     void testGenerateTest_ProducesCompilableCode() {
         String testCode = generator.generateTest(serviceClass);
 
-        // Verify structure is correct
         assertThat(testCode)
                 .startsWith("package com.example;")
                 .contains("import ")

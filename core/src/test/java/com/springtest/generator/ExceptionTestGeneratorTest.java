@@ -106,7 +106,6 @@ class ExceptionTestGeneratorTest {
 
         List<String> tests = generator.generateExceptionTests(methodInfo, "service");
 
-        // Should not duplicate IllegalArgumentException
         assertThat(tests).hasSize(2);
         long illegalArgCount = tests.stream()
                 .filter(test -> test.contains("ThrowsIllegalArgumentException"))

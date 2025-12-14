@@ -19,7 +19,6 @@ class IntegrationTestGeneratorTest {
     void setUp() {
         generator = new IntegrationTestGenerator(true, false);
 
-        // Create a sample service class
         MethodInfo serviceMethod = new MethodInfo(
                 "processUser",
                 "User",
@@ -43,7 +42,6 @@ class IntegrationTestGeneratorTest {
                 .addMethod(serviceMethod)
                 .build();
 
-        // Create a sample controller class
         MethodInfo webMethod = new MethodInfo(
                 "getUser",
                 "User",
@@ -242,7 +240,6 @@ class IntegrationTestGeneratorTest {
     void testGenerateTest_ProducesCompilableCode() {
         String testCode = generator.generateTest(serviceClass);
 
-        // Verify structure is correct
         assertThat(testCode)
                 .startsWith("package com.example;")
                 .contains("import ")

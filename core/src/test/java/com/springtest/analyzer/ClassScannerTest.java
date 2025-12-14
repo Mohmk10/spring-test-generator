@@ -26,7 +26,7 @@ class ClassScannerTest {
 
     @Test
     void shouldParseServiceClass_WhenSourceCodeIsValid() {
-        // Given
+
         String sourceCode = """
                 package com.example.service;
 
@@ -42,10 +42,8 @@ class ClassScannerTest {
                 }
                 """;
 
-        // When
         Optional<ClassInfo> result = classScanner.scanSource(sourceCode);
 
-        // Then
         assertThat(result).isPresent();
         ClassInfo classInfo = result.get();
         assertThat(classInfo.simpleName()).isEqualTo("UserService");
@@ -57,7 +55,7 @@ class ClassScannerTest {
 
     @Test
     void shouldExtractAutowiredFields_WhenClassHasAutowiredFields() {
-        // Given
+
         String sourceCode = """
                 package com.example.controller;
 
@@ -76,10 +74,8 @@ class ClassScannerTest {
                 }
                 """;
 
-        // When
         Optional<ClassInfo> result = classScanner.scanSource(sourceCode);
 
-        // Then
         assertThat(result).isPresent();
         ClassInfo classInfo = result.get();
 
@@ -99,7 +95,7 @@ class ClassScannerTest {
 
     @Test
     void shouldExtractMethods_WhenClassHasMethods() {
-        // Given
+
         String sourceCode = """
                 package com.example.service;
 
@@ -112,7 +108,7 @@ class ClassScannerTest {
                     }
 
                     public void deleteUser(Long id) {
-                        // delete logic
+
                     }
 
                     private String helperMethod() {
@@ -121,10 +117,8 @@ class ClassScannerTest {
                 }
                 """;
 
-        // When
         Optional<ClassInfo> result = classScanner.scanSource(sourceCode);
 
-        // Then
         assertThat(result).isPresent();
         ClassInfo classInfo = result.get();
 
@@ -147,7 +141,7 @@ class ClassScannerTest {
 
     @Test
     void shouldExtractMethodParameters_WhenMethodHasParameters() {
-        // Given
+
         String sourceCode = """
                 package com.example.controller;
 
@@ -165,10 +159,8 @@ class ClassScannerTest {
                 }
                 """;
 
-        // When
         Optional<ClassInfo> result = classScanner.scanSource(sourceCode);
 
-        // Then
         assertThat(result).isPresent();
         ClassInfo classInfo = result.get();
 
@@ -191,7 +183,7 @@ class ClassScannerTest {
 
     @Test
     void shouldDetectWebMappingMethods_WhenClassIsRestController() {
-        // Given
+
         String sourceCode = """
                 package com.example.controller;
 
@@ -211,15 +203,13 @@ class ClassScannerTest {
                     }
 
                     private void helperMethod() {
-                        // helper
+
                     }
                 }
                 """;
 
-        // When
         Optional<ClassInfo> result = classScanner.scanSource(sourceCode);
 
-        // Then
         assertThat(result).isPresent();
         ClassInfo classInfo = result.get();
 
@@ -232,7 +222,7 @@ class ClassScannerTest {
 
     @Test
     void shouldExtractDeclaredExceptions_WhenMethodDeclaresExceptions() {
-        // Given
+
         String sourceCode = """
                 package com.example.service;
 
@@ -247,10 +237,8 @@ class ClassScannerTest {
                 }
                 """;
 
-        // When
         Optional<ClassInfo> result = classScanner.scanSource(sourceCode);
 
-        // Then
         assertThat(result).isPresent();
         ClassInfo classInfo = result.get();
 
@@ -264,7 +252,7 @@ class ClassScannerTest {
 
     @Test
     void shouldParseFileSuccessfully_WhenFileExists(@TempDir Path tempDir) throws IOException {
-        // Given
+
         String sourceCode = """
                 package com.example;
 
@@ -280,10 +268,8 @@ class ClassScannerTest {
         File javaFile = tempDir.resolve("TestService.java").toFile();
         Files.writeString(javaFile.toPath(), sourceCode);
 
-        // When
         Optional<ClassInfo> result = classScanner.scanFile(javaFile);
 
-        // Then
         assertThat(result).isPresent();
         ClassInfo classInfo = result.get();
         assertThat(classInfo.simpleName()).isEqualTo("TestService");
@@ -292,34 +278,31 @@ class ClassScannerTest {
 
     @Test
     void shouldThrowException_WhenFileDoesNotExist() {
-        // Given
+
         File nonExistentFile = new File("/path/to/nonexistent/file.java");
 
-        // When & Then
         assertThatThrownBy(() -> classScanner.scanFile(nonExistentFile))
                 .isInstanceOf(FileNotFoundException.class);
     }
 
     @Test
     void shouldReturnEmpty_WhenSourceCodeIsInvalid() {
-        // Given
+
         String invalidSourceCode = """
                 package com.example;
 
                 public class InvalidClass {
-                    // Missing closing brace
+
                 """;
 
-        // When
         Optional<ClassInfo> result = classScanner.scanSource(invalidSourceCode);
 
-        // Then
         assertThat(result).isEmpty();
     }
 
     @Test
     void shouldExtractDependencies_WhenClassHasInjectedFields() {
-        // Given
+
         String sourceCode = """
                 package com.example.controller;
 
@@ -336,10 +319,8 @@ class ClassScannerTest {
                 }
                 """;
 
-        // When
         Optional<ClassInfo> result = classScanner.scanSource(sourceCode);
 
-        // Then
         assertThat(result).isPresent();
         ClassInfo classInfo = result.get();
 
@@ -350,7 +331,7 @@ class ClassScannerTest {
 
     @Test
     void shouldExtractImplementedInterfaces_WhenClassImplementsInterfaces() {
-        // Given
+
         String sourceCode = """
                 package com.example;
 
@@ -363,10 +344,8 @@ class ClassScannerTest {
                 }
                 """;
 
-        // When
         Optional<ClassInfo> result = classScanner.scanSource(sourceCode);
 
-        // Then
         assertThat(result).isPresent();
         ClassInfo classInfo = result.get();
 
@@ -377,7 +356,7 @@ class ClassScannerTest {
 
     @Test
     void shouldExtractSuperClass_WhenClassExtendsAnotherClass() {
-        // Given
+
         String sourceCode = """
                 package com.example;
 
@@ -390,10 +369,8 @@ class ClassScannerTest {
                 }
                 """;
 
-        // When
         Optional<ClassInfo> result = classScanner.scanSource(sourceCode);
 
-        // Then
         assertThat(result).isPresent();
         ClassInfo classInfo = result.get();
 
@@ -402,7 +379,7 @@ class ClassScannerTest {
 
     @Test
     void shouldDetectInterface_WhenTypeIsInterface() {
-        // Given
+
         String sourceCode = """
                 package com.example;
 
@@ -411,10 +388,8 @@ class ClassScannerTest {
                 }
                 """;
 
-        // When
         Optional<ClassInfo> result = classScanner.scanSource(sourceCode);
 
-        // Then
         assertThat(result).isPresent();
         ClassInfo classInfo = result.get();
 
@@ -424,7 +399,7 @@ class ClassScannerTest {
 
     @Test
     void shouldDetectAbstractClass_WhenClassIsAbstract() {
-        // Given
+
         String sourceCode = """
                 package com.example;
 
@@ -433,10 +408,8 @@ class ClassScannerTest {
                 }
                 """;
 
-        // When
         Optional<ClassInfo> result = classScanner.scanSource(sourceCode);
 
-        // Then
         assertThat(result).isPresent();
         ClassInfo classInfo = result.get();
 
@@ -446,7 +419,7 @@ class ClassScannerTest {
 
     @Test
     void shouldDetectFieldAccessModifiers_WhenFieldsHaveDifferentModifiers() {
-        // Given
+
         String sourceCode = """
                 package com.example;
 
@@ -458,10 +431,8 @@ class ClassScannerTest {
                 }
                 """;
 
-        // When
         Optional<ClassInfo> result = classScanner.scanSource(sourceCode);
 
-        // Then
         assertThat(result).isPresent();
         ClassInfo classInfo = result.get();
 

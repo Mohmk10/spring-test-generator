@@ -62,7 +62,7 @@ class EdgeCaseGeneratorTest {
         List<String> tests = generator.generateEdgeCaseTests(methodInfo, "service");
 
         assertThat(tests).isNotEmpty();
-        // Should have boundary tests: zero, negative, max, min
+
         assertThat(tests).anyMatch(test -> test.contains("WithZeroCount"));
         assertThat(tests).anyMatch(test -> test.contains("WithNegativeCount"));
         assertThat(tests).anyMatch(test -> test.contains("WithMaxValueCount"));
@@ -157,7 +157,6 @@ class EdgeCaseGeneratorTest {
 
         List<String> tests = generator.generateNullParameterTests(methodInfo, "service");
 
-        // Should be empty because primitives can't be null
         assertThat(tests).isEmpty();
     }
 
@@ -329,7 +328,7 @@ class EdgeCaseGeneratorTest {
         List<String> tests = generator.generateEdgeCaseTests(methodInfo, "service");
 
         assertThat(tests).isNotEmpty();
-        // Should have tests for all parameters
+
         assertThat(tests).anyMatch(test -> test.contains("Name"));
         assertThat(tests).anyMatch(test -> test.contains("Age"));
         assertThat(tests).anyMatch(test -> test.contains("Emails"));

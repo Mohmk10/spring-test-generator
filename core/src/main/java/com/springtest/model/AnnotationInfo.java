@@ -3,14 +3,6 @@ package com.springtest.model;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * Represents information about a Java annotation.
- * Contains the annotation name, fully qualified name, and its attributes.
- *
- * @param name          Simple name of the annotation
- * @param qualifiedName Fully qualified name of the annotation
- * @param attributes    Map of annotation attributes and their values
- */
 public record AnnotationInfo(
         String name,
         String qualifiedName,
@@ -54,38 +46,18 @@ public record AnnotationInfo(
             "org.springframework.beans.factory.annotation.Qualifier"
     );
 
-    /**
-     * Checks if this annotation is a Spring component stereotype annotation.
-     *
-     * @return true if this is a Spring component annotation
-     */
     public boolean isSpringComponent() {
         return SPRING_COMPONENT_ANNOTATIONS.contains(qualifiedName);
     }
 
-    /**
-     * Checks if this annotation is a Spring web mapping annotation.
-     *
-     * @return true if this is a web mapping annotation
-     */
     public boolean isWebMapping() {
         return WEB_MAPPING_ANNOTATIONS.contains(qualifiedName);
     }
 
-    /**
-     * Checks if this annotation is a validation annotation.
-     *
-     * @return true if this is a validation annotation
-     */
     public boolean isValidation() {
         return VALIDATION_ANNOTATIONS.contains(qualifiedName);
     }
 
-    /**
-     * Checks if this annotation is a dependency injection annotation.
-     *
-     * @return true if this is an injection annotation
-     */
     public boolean isInjection() {
         return INJECTION_ANNOTATIONS.contains(qualifiedName);
     }

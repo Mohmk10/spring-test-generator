@@ -26,7 +26,7 @@ class ProjectAnalyzerTest {
 
     @Test
     void shouldAnalyzeSource_WhenValidSourceCodeIsProvided() {
-        // Given
+
         String sourceCode = """
                 package com.example.service;
 
@@ -40,10 +40,8 @@ class ProjectAnalyzerTest {
                 }
                 """;
 
-        // When
         ProjectAnalyzer.AnalysisResult result = projectAnalyzer.analyzeSource(sourceCode);
 
-        // Then
         assertThat(result.isSuccess()).isTrue();
         assertThat(result.getClasses()).hasSize(1);
         assertThat(result.hasErrors()).isFalse();
@@ -55,10 +53,9 @@ class ProjectAnalyzerTest {
 
     @Test
     void shouldReturnFailure_WhenSourceCodeIsNull() {
-        // When
+
         ProjectAnalyzer.AnalysisResult result = projectAnalyzer.analyzeSource(null);
 
-        // Then
         assertThat(result.isSuccess()).isFalse();
         assertThat(result.getClasses()).isEmpty();
         assertThat(result.hasErrors()).isTrue();
@@ -67,28 +64,25 @@ class ProjectAnalyzerTest {
 
     @Test
     void shouldReturnFailure_WhenSourceCodeIsEmpty() {
-        // When
+
         ProjectAnalyzer.AnalysisResult result = projectAnalyzer.analyzeSource("");
 
-        // Then
         assertThat(result.isSuccess()).isFalse();
         assertThat(result.hasErrors()).isTrue();
     }
 
     @Test
     void shouldReturnFailure_WhenSourceCodeIsInvalid() {
-        // Given
+
         String invalidSourceCode = """
                 package com.example;
 
                 public class InvalidClass {
-                    // Missing closing brace
+
                 """;
 
-        // When
         ProjectAnalyzer.AnalysisResult result = projectAnalyzer.analyzeSource(invalidSourceCode);
 
-        // Then
         assertThat(result.isSuccess()).isFalse();
         assertThat(result.getClasses()).isEmpty();
         assertThat(result.hasErrors()).isTrue();
@@ -96,7 +90,7 @@ class ProjectAnalyzerTest {
 
     @Test
     void shouldAnalyzeFile_WhenValidFileIsProvided(@TempDir Path tempDir) throws IOException {
-        // Given
+
         String sourceCode = """
                 package com.example.controller;
 
@@ -115,10 +109,8 @@ class ProjectAnalyzerTest {
         File javaFile = tempDir.resolve("UserController.java").toFile();
         Files.writeString(javaFile.toPath(), sourceCode);
 
-        // When
         ProjectAnalyzer.AnalysisResult result = projectAnalyzer.analyzeFile(javaFile.getAbsolutePath());
 
-        // Then
         assertThat(result.isSuccess()).isTrue();
         assertThat(result.getClasses()).hasSize(1);
         assertThat(result.hasErrors()).isFalse();
@@ -131,10 +123,9 @@ class ProjectAnalyzerTest {
 
     @Test
     void shouldThrowException_WhenFileDoesNotExist() {
-        // Given
+
         String nonExistentPath = "/path/to/nonexistent/file.java";
 
-        // When & Then
         assertThatThrownBy(() -> projectAnalyzer.analyzeFile(nonExistentPath))
                 .isInstanceOf(FileNotFoundException.class)
                 .hasMessageContaining("File not found");
@@ -142,11 +133,10 @@ class ProjectAnalyzerTest {
 
     @Test
     void shouldThrowException_WhenFileIsNotJavaFile(@TempDir Path tempDir) throws IOException {
-        // Given
+
         File textFile = tempDir.resolve("test.txt").toFile();
         Files.writeString(textFile.toPath(), "This is not a Java file");
 
-        // When & Then
         assertThatThrownBy(() -> projectAnalyzer.analyzeFile(textFile.getAbsolutePath()))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("Not a Java source file");
@@ -154,8 +144,7 @@ class ProjectAnalyzerTest {
 
     @Test
     void shouldAnalyzeProject_WhenProjectDirectoryContainsJavaFiles(@TempDir Path tempDir) throws IOException {
-        // Given
-        // Create a project structure
+
         Path srcDir = tempDir.resolve("src/main/java/com/example");
         Files.createDirectories(srcDir);
 
@@ -186,10 +175,8 @@ class ProjectAnalyzerTest {
         Files.writeString(srcDir.resolve("UserService.java"), serviceCode);
         Files.writeString(srcDir.resolve("UserController.java"), controllerCode);
 
-        // When
         ProjectAnalyzer.AnalysisResult result = projectAnalyzer.analyzeProject(tempDir.toString());
 
-        // Then
         assertThat(result.isSuccess()).isTrue();
         assertThat(result.getClasses()).hasSize(2);
         assertThat(result.getClasses())
@@ -199,13 +186,11 @@ class ProjectAnalyzerTest {
 
     @Test
     void shouldReturnFailure_WhenProjectDirectoryDoesNotExist() throws IOException {
-        // Given
+
         String nonExistentPath = "/path/to/nonexistent/project";
 
-        // When
         ProjectAnalyzer.AnalysisResult result = projectAnalyzer.analyzeProject(nonExistentPath);
 
-        // Then
         assertThat(result.isSuccess()).isFalse();
         assertThat(result.hasErrors()).isTrue();
         assertThat(result.getErrors()).anyMatch(error ->
@@ -214,20 +199,18 @@ class ProjectAnalyzerTest {
 
     @Test
     void shouldReturnEmptyResult_WhenProjectDirectoryHasNoJavaFiles(@TempDir Path tempDir) throws IOException {
-        // Given
+
         Files.createDirectories(tempDir.resolve("empty"));
 
-        // When
         ProjectAnalyzer.AnalysisResult result = projectAnalyzer.analyzeProject(tempDir.toString());
 
-        // Then
         assertThat(result.isSuccess()).isTrue();
         assertThat(result.getClasses()).isEmpty();
     }
 
     @Test
     void shouldAnalyzeMultipleFiles_WhenProjectHasNestedStructure(@TempDir Path tempDir) throws IOException {
-        // Given
+
         Path serviceDir = tempDir.resolve("src/main/java/com/example/service");
         Path controllerDir = tempDir.resolve("src/main/java/com/example/controller");
         Files.createDirectories(serviceDir);
@@ -267,10 +250,8 @@ class ProjectAnalyzerTest {
         Files.writeString(serviceDir.resolve("UserRepository.java"), repositoryCode);
         Files.writeString(controllerDir.resolve("UserController.java"), controllerCode);
 
-        // When
         ProjectAnalyzer.AnalysisResult result = projectAnalyzer.analyzeProject(tempDir.toString());
 
-        // Then
         assertThat(result.isSuccess()).isTrue();
         assertThat(result.getClasses()).hasSize(3);
         assertThat(result.getClasses())
@@ -280,7 +261,7 @@ class ProjectAnalyzerTest {
 
     @Test
     void shouldReturnSuccessWithWarnings_WhenSomeFilesFailToParse(@TempDir Path tempDir) throws IOException {
-        // Given
+
         Path srcDir = tempDir.resolve("src");
         Files.createDirectories(srcDir);
 
@@ -298,16 +279,14 @@ class ProjectAnalyzerTest {
                 package com.example;
 
                 public class InvalidService {
-                    // Missing closing brace
+
                 """;
 
         Files.writeString(srcDir.resolve("ValidService.java"), validCode);
         Files.writeString(srcDir.resolve("InvalidService.java"), invalidCode);
 
-        // When
         ProjectAnalyzer.AnalysisResult result = projectAnalyzer.analyzeProject(tempDir.toString());
 
-        // Then
         assertThat(result.isSuccess()).isTrue();
         assertThat(result.getClasses()).hasSize(1);
         assertThat(result.getClasses().get(0).simpleName()).isEqualTo("ValidService");
@@ -315,19 +294,17 @@ class ProjectAnalyzerTest {
 
     @Test
     void shouldCreateSuccessfulResult_WhenCreatingWithFactoryMethod() {
-        // Given
+
         ClassInfo classInfo = ClassInfo.builder()
                 .simpleName("TestClass")
                 .qualifiedName("com.example.TestClass")
                 .packageName("com.example")
                 .build();
 
-        // When
         ProjectAnalyzer.AnalysisResult result = ProjectAnalyzer.AnalysisResult.success(
                 java.util.List.of(classInfo)
         );
 
-        // Then
         assertThat(result.isSuccess()).isTrue();
         assertThat(result.getClasses()).hasSize(1);
         assertThat(result.hasErrors()).isFalse();
@@ -336,10 +313,9 @@ class ProjectAnalyzerTest {
 
     @Test
     void shouldCreateFailureResult_WhenCreatingWithFactoryMethod() {
-        // When
+
         ProjectAnalyzer.AnalysisResult result = ProjectAnalyzer.AnalysisResult.failure("Test error");
 
-        // Then
         assertThat(result.isSuccess()).isFalse();
         assertThat(result.getClasses()).isEmpty();
         assertThat(result.hasErrors()).isTrue();
@@ -349,20 +325,18 @@ class ProjectAnalyzerTest {
 
     @Test
     void shouldCreateResultWithWarnings_WhenCreatingWithFactoryMethod() {
-        // Given
+
         ClassInfo classInfo = ClassInfo.builder()
                 .simpleName("TestClass")
                 .qualifiedName("com.example.TestClass")
                 .packageName("com.example")
                 .build();
 
-        // When
         ProjectAnalyzer.AnalysisResult result = ProjectAnalyzer.AnalysisResult.success(
                 java.util.List.of(classInfo),
                 java.util.List.of("Warning: some issue")
         );
 
-        // Then
         assertThat(result.isSuccess()).isTrue();
         assertThat(result.getClasses()).hasSize(1);
         assertThat(result.hasErrors()).isTrue();
@@ -372,7 +346,7 @@ class ProjectAnalyzerTest {
 
     @Test
     void shouldReturnImmutableCollections_WhenAccessingResultData() {
-        // Given
+
         ClassInfo classInfo = ClassInfo.builder()
                 .simpleName("TestClass")
                 .qualifiedName("com.example.TestClass")
@@ -383,7 +357,6 @@ class ProjectAnalyzerTest {
                 java.util.List.of(classInfo)
         );
 
-        // When & Then
         assertThatThrownBy(() -> result.getClasses().clear())
                 .isInstanceOf(UnsupportedOperationException.class);
 
@@ -393,7 +366,7 @@ class ProjectAnalyzerTest {
 
     @Test
     void shouldProvideUsefulToString_WhenCallingToString() {
-        // Given
+
         ClassInfo classInfo = ClassInfo.builder()
                 .simpleName("TestClass")
                 .qualifiedName("com.example.TestClass")
@@ -404,10 +377,8 @@ class ProjectAnalyzerTest {
                 java.util.List.of(classInfo)
         );
 
-        // When
         String toString = result.toString();
 
-        // Then
         assertThat(toString)
                 .contains("success=true")
                 .contains("classes=1")

@@ -10,10 +10,6 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.Set;
 
-/**
- * Detects validation annotations on fields, methods, and parameters.
- * Package-private utility class for internal use.
- */
 class ValidationDetector {
     private static final Logger logger = LoggerFactory.getLogger(ValidationDetector.class);
 
@@ -25,56 +21,25 @@ class ValidationDetector {
             "Digits", "AssertTrue", "AssertFalse"
     );
 
-    /**
-     * Checks if a field has validation annotations.
-     *
-     * @param field JavaParser field declaration
-     * @return true if the field has validation annotations
-     */
     static boolean hasValidation(FieldDeclaration field) {
         return field.getAnnotations().stream()
                 .anyMatch(annotation -> VALIDATION_ANNOTATION_NAMES.contains(annotation.getNameAsString()));
     }
 
-    /**
-     * Checks if a method has validation annotations on its parameters.
-     *
-     * @param method JavaParser method declaration
-     * @return true if any parameter has validation annotations
-     */
     static boolean hasValidation(MethodDeclaration method) {
         return method.getParameters().stream()
                 .anyMatch(ValidationDetector::hasValidation);
     }
 
-    /**
-     * Checks if a parameter has validation annotations.
-     *
-     * @param parameter JavaParser parameter
-     * @return true if the parameter has validation annotations
-     */
     static boolean hasValidation(Parameter parameter) {
         return parameter.getAnnotations().stream()
                 .anyMatch(annotation -> VALIDATION_ANNOTATION_NAMES.contains(annotation.getNameAsString()));
     }
 
-    /**
-     * Checks if a list of annotations contains validation annotations.
-     *
-     * @param annotations List of AnnotationInfo objects
-     * @return true if any annotation is a validation annotation
-     */
     static boolean hasValidation(List<AnnotationInfo> annotations) {
         return annotations.stream().anyMatch(AnnotationInfo::isValidation);
     }
 
-    /**
-     * Determines if a parameter is required based on validation annotations.
-     * A parameter is considered required if it has @NotNull, @NotBlank, or @NotEmpty.
-     *
-     * @param annotations List of AnnotationInfo objects for the parameter
-     * @return true if the parameter is required
-     */
     static boolean isRequired(List<AnnotationInfo> annotations) {
         return annotations.stream()
                 .anyMatch(annotation ->

@@ -18,7 +18,6 @@ class RepositoryTestGeneratorTest {
     void setUp() {
         generator = new RepositoryTestGenerator(true);
 
-        // Create a sample repository class
         MethodInfo findByNameMethod = new MethodInfo(
                 "findByName",
                 "List",
@@ -193,7 +192,6 @@ class RepositoryTestGeneratorTest {
     void testGenerateTest_InfersEntityName() {
         String testCode = generator.generateTest(repositoryClass);
 
-        // Repository is UserRepository, so entity should be User
         assertThat(testCode)
                 .contains("User entity = new User()");
     }
@@ -213,7 +211,6 @@ class RepositoryTestGeneratorTest {
     void testGenerateTest_ProducesCompilableCode() {
         String testCode = generator.generateTest(repositoryClass);
 
-        // Verify structure is correct
         assertThat(testCode)
                 .startsWith("package com.example;")
                 .contains("import ")

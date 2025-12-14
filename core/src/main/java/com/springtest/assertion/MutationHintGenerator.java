@@ -7,38 +7,24 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Generates mutation testing hints to improve test quality.
- * Suggests additional assertions to catch potential mutations and bugs.
- */
 public class MutationHintGenerator {
     private static final Logger logger = LoggerFactory.getLogger(MutationHintGenerator.class);
 
-    /**
-     * Generates mutation testing hints for a method.
-     *
-     * @param methodInfo Information about the method being tested
-     * @return List of hints as comments
-     */
     public List<String> generateHints(MethodInfo methodInfo) {
         logger.debug("Generating mutation hints for method: {}", methodInfo.name());
 
         List<String> hints = new ArrayList<>();
 
-        // Return type hints
         hints.addAll(generateReturnTypeHints(methodInfo.returnType()));
 
-        // Parameter hints
         if (methodInfo.hasParameters()) {
             hints.addAll(generateParameterHints());
         }
 
-        // Exception hints
         if (methodInfo.throwsExceptions()) {
             hints.addAll(generateExceptionHints());
         }
 
-        // Boolean logic hints
         if (methodInfo.returnType().equals("boolean") || methodInfo.returnType().equals("Boolean")) {
             hints.addAll(generateBooleanLogicHints());
         }
@@ -46,12 +32,6 @@ public class MutationHintGenerator {
         return hints;
     }
 
-    /**
-     * Generates hints based on return type.
-     *
-     * @param returnType Return type of the method
-     * @return List of hints
-     */
     private List<String> generateReturnTypeHints(String returnType) {
         List<String> hints = new ArrayList<>();
 
@@ -100,11 +80,6 @@ public class MutationHintGenerator {
         return hints;
     }
 
-    /**
-     * Generates hints for parameter validation.
-     *
-     * @return List of hints
-     */
     private List<String> generateParameterHints() {
         List<String> hints = new ArrayList<>();
         hints.add("// Mutation hint: Test with null parameters");
@@ -113,11 +88,6 @@ public class MutationHintGenerator {
         return hints;
     }
 
-    /**
-     * Generates hints for exception handling.
-     *
-     * @return List of hints
-     */
     private List<String> generateExceptionHints() {
         List<String> hints = new ArrayList<>();
         hints.add("// Mutation hint: Verify exception type, not just that it's thrown");
@@ -126,11 +96,6 @@ public class MutationHintGenerator {
         return hints;
     }
 
-    /**
-     * Generates hints for boolean logic.
-     *
-     * @return List of hints
-     */
     private List<String> generateBooleanLogicHints() {
         List<String> hints = new ArrayList<>();
         hints.add("// Mutation hint: Test all branches of boolean conditions");
@@ -139,12 +104,6 @@ public class MutationHintGenerator {
         return hints;
     }
 
-    /**
-     * Generates suggestions for strengthening specific assertion types.
-     *
-     * @param assertionType Type of assertion (e.g., "isNotNull", "isEqualTo")
-     * @return Suggestion as a comment
-     */
     public String generateAssertionStrengtheningHint(String assertionType) {
         return switch (assertionType) {
             case "isNotNull" ->
@@ -162,12 +121,6 @@ public class MutationHintGenerator {
         };
     }
 
-    /**
-     * Generates hints for improving test coverage.
-     *
-     * @param methodInfo Information about the method
-     * @return List of coverage improvement hints
-     */
     public List<String> generateCoverageHints(MethodInfo methodInfo) {
         List<String> hints = new ArrayList<>();
 
@@ -186,11 +139,6 @@ public class MutationHintGenerator {
         return hints;
     }
 
-    /**
-     * Generates hints for common mutation operators.
-     *
-     * @return List of mutation operator hints
-     */
     public List<String> generateMutationOperatorHints() {
         List<String> hints = new ArrayList<>();
 
@@ -203,12 +151,6 @@ public class MutationHintGenerator {
         return hints;
     }
 
-    /**
-     * Generates a complete hint section for a test method.
-     *
-     * @param methodInfo Information about the method being tested
-     * @return Complete hint section as comments
-     */
     public String generateCompleteHintSection(MethodInfo methodInfo) {
         StringBuilder hints = new StringBuilder();
 
@@ -233,12 +175,6 @@ public class MutationHintGenerator {
         return hints.toString();
     }
 
-    /**
-     * Generates hints for specific test scenarios.
-     *
-     * @param scenario Test scenario (e.g., "null-input", "empty-collection")
-     * @return Hint for the scenario
-     */
     public String generateScenarioHint(String scenario) {
         return switch (scenario) {
             case "null-input" ->
@@ -256,12 +192,6 @@ public class MutationHintGenerator {
         };
     }
 
-    /**
-     * Generates suggestions for improving assertion specificity.
-     *
-     * @param returnType Return type of the method
-     * @return List of specificity improvement suggestions
-     */
     public List<String> generateSpecificityHints(String returnType) {
         List<String> hints = new ArrayList<>();
 

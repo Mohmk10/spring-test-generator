@@ -1,0 +1,4 @@
+defaultSourcePath: custom/src
+defaultOutputPath: custom/test
+defaultTestType: unit
+defaultNamingStrategy: bdd

@@ -24,7 +24,7 @@ class AnnotationDetectorTest {
 
     @Test
     void shouldDetectServiceAnnotation_WhenClassIsAnnotatedWithService() {
-        // Given
+
         String sourceCode = """
                 package com.example;
 
@@ -35,12 +35,10 @@ class AnnotationDetectorTest {
                 }
                 """;
 
-        // When
         CompilationUnit cu = javaParser.parse(sourceCode).getResult().orElseThrow();
         ClassOrInterfaceDeclaration classDecl = cu.getClassByName("UserService").orElseThrow();
         List<AnnotationInfo> annotations = AnnotationDetector.extractAnnotations(classDecl.getAnnotations());
 
-        // Then
         assertThat(annotations).hasSize(1);
         AnnotationInfo annotation = annotations.get(0);
         assertThat(annotation.name()).isEqualTo("Service");
@@ -50,7 +48,7 @@ class AnnotationDetectorTest {
 
     @Test
     void shouldDetectRestControllerAnnotation_WhenClassIsAnnotatedWithRestController() {
-        // Given
+
         String sourceCode = """
                 package com.example;
 
@@ -61,12 +59,10 @@ class AnnotationDetectorTest {
                 }
                 """;
 
-        // When
         CompilationUnit cu = javaParser.parse(sourceCode).getResult().orElseThrow();
         ClassOrInterfaceDeclaration classDecl = cu.getClassByName("UserController").orElseThrow();
         List<AnnotationInfo> annotations = AnnotationDetector.extractAnnotations(classDecl.getAnnotations());
 
-        // Then
         assertThat(annotations).hasSize(1);
         AnnotationInfo annotation = annotations.get(0);
         assertThat(annotation.name()).isEqualTo("RestController");
@@ -76,7 +72,7 @@ class AnnotationDetectorTest {
 
     @Test
     void shouldDetectGetMappingAnnotation_WhenMethodIsAnnotatedWithGetMapping() {
-        // Given
+
         String sourceCode = """
                 package com.example;
 
@@ -90,13 +86,11 @@ class AnnotationDetectorTest {
                 }
                 """;
 
-        // When
         CompilationUnit cu = javaParser.parse(sourceCode).getResult().orElseThrow();
         ClassOrInterfaceDeclaration classDecl = cu.getClassByName("UserController").orElseThrow();
         MethodDeclaration method = classDecl.getMethodsByName("getUsers").get(0);
         List<AnnotationInfo> annotations = AnnotationDetector.extractAnnotations(method.getAnnotations());
 
-        // Then
         assertThat(annotations).hasSize(1);
         AnnotationInfo annotation = annotations.get(0);
         assertThat(annotation.name()).isEqualTo("GetMapping");
@@ -106,7 +100,7 @@ class AnnotationDetectorTest {
 
     @Test
     void shouldDetectAutowiredAnnotation_WhenFieldIsAnnotatedWithAutowired() {
-        // Given
+
         String sourceCode = """
                 package com.example;
 
@@ -118,13 +112,11 @@ class AnnotationDetectorTest {
                 }
                 """;
 
-        // When
         CompilationUnit cu = javaParser.parse(sourceCode).getResult().orElseThrow();
         ClassOrInterfaceDeclaration classDecl = cu.getClassByName("UserController").orElseThrow();
         FieldDeclaration field = classDecl.getFieldByName("userService").orElseThrow();
         List<AnnotationInfo> annotations = AnnotationDetector.extractAnnotations(field.getAnnotations());
 
-        // Then
         assertThat(annotations).hasSize(1);
         AnnotationInfo annotation = annotations.get(0);
         assertThat(annotation.name()).isEqualTo("Autowired");
@@ -134,7 +126,7 @@ class AnnotationDetectorTest {
 
     @Test
     void shouldDetectValidAnnotation_WhenParameterIsAnnotatedWithValid() {
-        // Given
+
         String sourceCode = """
                 package com.example;
 
@@ -146,7 +138,6 @@ class AnnotationDetectorTest {
                 }
                 """;
 
-        // When
         CompilationUnit cu = javaParser.parse(sourceCode).getResult().orElseThrow();
         ClassOrInterfaceDeclaration classDecl = cu.getClassByName("UserController").orElseThrow();
         MethodDeclaration method = classDecl.getMethodsByName("createUser").get(0);
@@ -154,7 +145,6 @@ class AnnotationDetectorTest {
                 method.getParameter(0).getAnnotations()
         );
 
-        // Then
         assertThat(annotations).hasSize(1);
         AnnotationInfo annotation = annotations.get(0);
         assertThat(annotation.name()).isEqualTo("Valid");
@@ -164,7 +154,7 @@ class AnnotationDetectorTest {
 
     @Test
     void shouldExtractAnnotationAttributes_WhenAnnotationHasValueAttribute() {
-        // Given
+
         String sourceCode = """
                 package com.example;
 
@@ -178,13 +168,11 @@ class AnnotationDetectorTest {
                 }
                 """;
 
-        // When
         CompilationUnit cu = javaParser.parse(sourceCode).getResult().orElseThrow();
         ClassOrInterfaceDeclaration classDecl = cu.getClassByName("UserController").orElseThrow();
         MethodDeclaration method = classDecl.getMethodsByName("getUsers").get(0);
         List<AnnotationInfo> annotations = AnnotationDetector.extractAnnotations(method.getAnnotations());
 
-        // Then
         assertThat(annotations).hasSize(1);
         AnnotationInfo annotation = annotations.get(0);
         assertThat(annotation.attributes()).containsKey("value");
@@ -193,7 +181,7 @@ class AnnotationDetectorTest {
 
     @Test
     void shouldDetectMultipleAnnotations_WhenElementHasMultipleAnnotations() {
-        // Given
+
         String sourceCode = """
                 package com.example;
 
@@ -206,12 +194,10 @@ class AnnotationDetectorTest {
                 }
                 """;
 
-        // When
         CompilationUnit cu = javaParser.parse(sourceCode).getResult().orElseThrow();
         ClassOrInterfaceDeclaration classDecl = cu.getClassByName("UserController").orElseThrow();
         List<AnnotationInfo> annotations = AnnotationDetector.extractAnnotations(classDecl.getAnnotations());
 
-        // Then
         assertThat(annotations).hasSize(2);
         assertThat(annotations)
                 .extracting(AnnotationInfo::name)
@@ -222,7 +208,7 @@ class AnnotationDetectorTest {
 
     @Test
     void shouldInferQualifiedName_WhenImportIsMissing() {
-        // Given
+
         String sourceCode = """
                 package com.example;
 
@@ -231,22 +217,20 @@ class AnnotationDetectorTest {
                 }
                 """;
 
-        // When
         CompilationUnit cu = javaParser.parse(sourceCode).getResult().orElseThrow();
         ClassOrInterfaceDeclaration classDecl = cu.getClassByName("UserService").orElseThrow();
         List<AnnotationInfo> annotations = AnnotationDetector.extractAnnotations(classDecl.getAnnotations());
 
-        // Then
         assertThat(annotations).hasSize(1);
         AnnotationInfo annotation = annotations.get(0);
         assertThat(annotation.name()).isEqualTo("Service");
-        // Should infer the qualified name even without import
+
         assertThat(annotation.qualifiedName()).isEqualTo("org.springframework.stereotype.Service");
     }
 
     @Test
     void shouldReturnEmptyAttributes_WhenAnnotationHasNoAttributes() {
-        // Given
+
         String sourceCode = """
                 package com.example;
 
@@ -257,12 +241,10 @@ class AnnotationDetectorTest {
                 }
                 """;
 
-        // When
         CompilationUnit cu = javaParser.parse(sourceCode).getResult().orElseThrow();
         ClassOrInterfaceDeclaration classDecl = cu.getClassByName("UserService").orElseThrow();
         List<AnnotationInfo> annotations = AnnotationDetector.extractAnnotations(classDecl.getAnnotations());
 
-        // Then
         assertThat(annotations).hasSize(1);
         AnnotationInfo annotation = annotations.get(0);
         assertThat(annotation.attributes()).isEmpty();

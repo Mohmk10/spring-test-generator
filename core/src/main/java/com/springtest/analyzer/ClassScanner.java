@@ -18,26 +18,26 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Scans and parses Java source files to extract class information.
- * Package-private utility class for internal use.
- */
-class ClassScanner {
+public class ClassScanner {
     private static final Logger logger = LoggerFactory.getLogger(ClassScanner.class);
     private final JavaParser javaParser;
 
-    ClassScanner() {
+    public ClassScanner() {
         this.javaParser = new JavaParser();
     }
 
-    /**
-     * Scans a Java source file and extracts class information.
-     *
-     * @param sourceFile Java source file to scan
-     * @return Optional ClassInfo if parsing succeeds, empty otherwise
-     * @throws FileNotFoundException if the source file does not exist
-     */
-    Optional<ClassInfo> scanFile(File sourceFile) throws FileNotFoundException {
+    public ClassInfo scanClass(String sourcePath) {
+        File sourceFile = new File(sourcePath);
+        try {
+            Optional<ClassInfo> result = scanFile(sourceFile);
+            return result.orElse(null);
+        } catch (FileNotFoundException e) {
+            logger.error("File not found: {}", sourcePath, e);
+            return null;
+        }
+    }
+
+    public Optional<ClassInfo> scanFile(File sourceFile) throws FileNotFoundException {
         logger.info("Scanning file: {}", sourceFile.getAbsolutePath());
 
         ParseResult<CompilationUnit> parseResult = javaParser.parse(sourceFile);
@@ -54,12 +54,6 @@ class ClassScanner {
         return scanCompilationUnit(cu, sourceFile.getAbsolutePath());
     }
 
-    /**
-     * Scans a Java source code string and extracts class information.
-     *
-     * @param sourceCode Java source code as string
-     * @return Optional ClassInfo if parsing succeeds, empty otherwise
-     */
     Optional<ClassInfo> scanSource(String sourceCode) {
         logger.debug("Scanning source code");
 
@@ -77,20 +71,12 @@ class ClassScanner {
         return scanCompilationUnit(cu, null);
     }
 
-    /**
-     * Scans a compilation unit and extracts class information.
-     *
-     * @param cu         Parsed compilation unit
-     * @param sourcePath Path to source file (may be null)
-     * @return Optional ClassInfo if a primary class is found, empty otherwise
-     */
     private Optional<ClassInfo> scanCompilationUnit(CompilationUnit cu, String sourcePath) {
-        // First try to get the primary type
+
         Optional<ClassOrInterfaceDeclaration> primaryClass = cu.getPrimaryType()
                 .filter(type -> type instanceof ClassOrInterfaceDeclaration)
                 .map(type -> (ClassOrInterfaceDeclaration) type);
 
-        // If primary type not found, try to find any class/interface declaration
         if (primaryClass.isEmpty()) {
             List<ClassOrInterfaceDeclaration> types = cu.findAll(ClassOrInterfaceDeclaration.class);
             if (!types.isEmpty()) {
@@ -108,14 +94,6 @@ class ClassScanner {
         return Optional.of(analyzeClass(classDecl, cu, sourcePath));
     }
 
-    /**
-     * Analyzes a class declaration and extracts complete class information.
-     *
-     * @param classDecl  JavaParser class declaration
-     * @param cu         Compilation unit containing the class
-     * @param sourcePath Path to source file
-     * @return ClassInfo object with complete class metadata
-     */
     private ClassInfo analyzeClass(ClassOrInterfaceDeclaration classDecl, CompilationUnit cu, String sourcePath) {
         String simpleName = classDecl.getNameAsString();
         String packageName = cu.getPackageDeclaration()
@@ -125,20 +103,15 @@ class ClassScanner {
 
         logger.debug("Analyzing class: {}", qualifiedName);
 
-        // Extract annotations and determine class type
         List<AnnotationInfo> annotations = AnnotationDetector.extractAnnotations(classDecl.getAnnotations());
         ClassType classType = determineClassType(annotations);
 
-        // Extract fields
         List<FieldInfo> fields = analyzeFields(classDecl);
 
-        // Extract methods
         List<MethodInfo> methods = MethodAnalyzer.analyzeMethods(classDecl.getMethods());
 
-        // Extract dependencies
         List<String> dependencies = DependencyAnalyzer.extractDependencies(classDecl);
 
-        // Extract interfaces and superclass
         List<String> implementedInterfaces = classDecl.getImplementedTypes().stream()
                 .map(type -> type.asString())
                 .toList();
@@ -168,12 +141,6 @@ class ClassScanner {
                 .build();
     }
 
-    /**
-     * Analyzes all fields in a class.
-     *
-     * @param classDecl JavaParser class declaration
-     * @return List of FieldInfo objects
-     */
     private List<FieldInfo> analyzeFields(ClassOrInterfaceDeclaration classDecl) {
         List<FieldInfo> fields = new ArrayList<>();
 
@@ -186,13 +153,6 @@ class ClassScanner {
         return fields;
     }
 
-    /**
-     * Analyzes a single field.
-     *
-     * @param field    JavaParser field declaration
-     * @param variable Variable declarator for this field
-     * @return FieldInfo object
-     */
     private FieldInfo analyzeField(FieldDeclaration field, VariableDeclarator variable) {
         String name = variable.getNameAsString();
         String type = variable.getType().asString();
@@ -206,12 +166,6 @@ class ClassScanner {
         return new FieldInfo(name, type, qualifiedType, annotations, injected, accessModifier, isFinal);
     }
 
-    /**
-     * Resolves the qualified type name for a variable.
-     *
-     * @param variable Variable declarator
-     * @return Fully qualified type name
-     */
     private String resolveQualifiedType(VariableDeclarator variable) {
         try {
             return variable.getType().resolve().describe();
@@ -220,12 +174,6 @@ class ClassScanner {
         }
     }
 
-    /**
-     * Determines the access modifier of a field.
-     *
-     * @param field JavaParser field declaration
-     * @return AccessModifier enum value
-     */
     private AccessModifier determineFieldAccessModifier(FieldDeclaration field) {
         if (field.hasModifier(Modifier.Keyword.PUBLIC)) {
             return AccessModifier.PUBLIC;
@@ -238,12 +186,6 @@ class ClassScanner {
         }
     }
 
-    /**
-     * Determines the Spring component type based on class annotations.
-     *
-     * @param annotations List of class annotations
-     * @return ClassType enum value
-     */
     private ClassType determineClassType(List<AnnotationInfo> annotations) {
         for (AnnotationInfo annotation : annotations) {
             ClassType type = switch (annotation.qualifiedName()) {

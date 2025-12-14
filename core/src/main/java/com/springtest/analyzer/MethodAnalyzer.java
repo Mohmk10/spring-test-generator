@@ -13,19 +13,9 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Analyzes method declarations and extracts detailed method information.
- * Package-private utility class for internal use.
- */
 class MethodAnalyzer {
     private static final Logger logger = LoggerFactory.getLogger(MethodAnalyzer.class);
 
-    /**
-     * Analyzes a method declaration and extracts all relevant information.
-     *
-     * @param method JavaParser method declaration
-     * @return MethodInfo object with complete method metadata
-     */
     static MethodInfo analyzeMethod(MethodDeclaration method) {
         String name = method.getNameAsString();
         String returnType = method.getType().asString();
@@ -59,12 +49,6 @@ class MethodAnalyzer {
         );
     }
 
-    /**
-     * Analyzes all parameters of a method.
-     *
-     * @param method JavaParser method declaration
-     * @return List of ParameterInfo objects
-     */
     static List<ParameterInfo> analyzeParameters(MethodDeclaration method) {
         List<ParameterInfo> parameters = new ArrayList<>();
 
@@ -75,12 +59,6 @@ class MethodAnalyzer {
         return parameters;
     }
 
-    /**
-     * Analyzes a single parameter and extracts its information.
-     *
-     * @param parameter JavaParser parameter
-     * @return ParameterInfo object
-     */
     static ParameterInfo analyzeParameter(Parameter parameter) {
         String name = parameter.getNameAsString();
         String type = parameter.getType().asString();
@@ -93,46 +71,27 @@ class MethodAnalyzer {
         return new ParameterInfo(name, type, qualifiedType, annotations, required, genericType);
     }
 
-    /**
-     * Resolves the fully qualified return type of a method.
-     *
-     * @param method JavaParser method declaration
-     * @return Fully qualified return type name
-     */
     private static String resolveQualifiedReturnType(MethodDeclaration method) {
         try {
             return method.getType().resolve().describe();
         } catch (Exception e) {
-            // If resolution fails, return simple type
+
             return method.getType().asString();
         }
     }
 
-    /**
-     * Resolves the fully qualified type of a parameter.
-     *
-     * @param parameter JavaParser parameter
-     * @return Fully qualified parameter type name
-     */
     private static String resolveQualifiedParameterType(Parameter parameter) {
         try {
             return parameter.getType().resolve().describe();
         } catch (Exception e) {
-            // If resolution fails, return simple type
+
             return parameter.getType().asString();
         }
     }
 
-    /**
-     * Extracts generic type information from a parameter.
-     *
-     * @param parameter JavaParser parameter
-     * @return Generic type string or null if not generic
-     */
     private static String extractGenericType(Parameter parameter) {
         String typeStr = parameter.getType().asString();
 
-        // Check if type contains generic information
         if (typeStr.contains("<") && typeStr.contains(">")) {
             return typeStr;
         }
@@ -140,12 +99,6 @@ class MethodAnalyzer {
         return null;
     }
 
-    /**
-     * Determines the access modifier of a method.
-     *
-     * @param method JavaParser method declaration
-     * @return AccessModifier enum value
-     */
     private static AccessModifier determineAccessModifier(MethodDeclaration method) {
         if (method.hasModifier(Modifier.Keyword.PUBLIC)) {
             return AccessModifier.PUBLIC;
@@ -158,12 +111,6 @@ class MethodAnalyzer {
         }
     }
 
-    /**
-     * Analyzes multiple methods from a class.
-     *
-     * @param methods List of JavaParser method declarations
-     * @return List of MethodInfo objects
-     */
     static List<MethodInfo> analyzeMethods(List<MethodDeclaration> methods) {
         List<MethodInfo> methodInfoList = new ArrayList<>();
 

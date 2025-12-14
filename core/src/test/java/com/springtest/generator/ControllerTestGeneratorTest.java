@@ -20,7 +20,6 @@ class ControllerTestGeneratorTest {
     void setUp() {
         generator = new ControllerTestGenerator();
 
-        // Create a sample controller class
         FieldInfo serviceField = new FieldInfo(
                 "userService",
                 "UserService",
@@ -223,7 +222,6 @@ class ControllerTestGeneratorTest {
     void testGenerateTest_ProducesCompilableCode() {
         String testCode = generator.generateTest(controllerClass);
 
-        // Verify structure is correct
         assertThat(testCode)
                 .startsWith("package com.example;")
                 .contains("import ")

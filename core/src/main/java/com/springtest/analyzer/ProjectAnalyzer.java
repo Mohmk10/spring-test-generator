@@ -14,28 +14,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-/**
- * Public facade for analyzing Java projects and extracting class information.
- * This is the main entry point for code analysis functionality.
- */
 public class ProjectAnalyzer {
     private static final Logger logger = LoggerFactory.getLogger(ProjectAnalyzer.class);
     private final ClassScanner classScanner;
 
-    /**
-     * Creates a new ProjectAnalyzer instance.
-     */
     public ProjectAnalyzer() {
         this.classScanner = new ClassScanner();
     }
 
-    /**
-     * Analyzes a single Java source file.
-     *
-     * @param filePath Path to the Java source file
-     * @return AnalysisResult containing the class information if successful
-     * @throws FileNotFoundException if the file does not exist
-     */
     public AnalysisResult analyzeFile(String filePath) throws FileNotFoundException {
         logger.info("Analyzing file: {}", filePath);
 
@@ -60,12 +46,6 @@ public class ProjectAnalyzer {
         }
     }
 
-    /**
-     * Analyzes Java source code provided as a string.
-     *
-     * @param sourceCode Java source code to analyze
-     * @return AnalysisResult containing the class information if successful
-     */
     public AnalysisResult analyzeSource(String sourceCode) {
         logger.debug("Analyzing source code");
 
@@ -85,14 +65,6 @@ public class ProjectAnalyzer {
         }
     }
 
-    /**
-     * Analyzes all Java files in a project directory.
-     * Recursively scans the directory for .java files.
-     *
-     * @param projectPath Path to the project directory
-     * @return AnalysisResult containing all discovered classes
-     * @throws IOException if there's an error reading the directory
-     */
     public AnalysisResult analyzeProject(String projectPath) throws IOException {
         logger.info("Analyzing project: {}", projectPath);
 
@@ -131,13 +103,6 @@ public class ProjectAnalyzer {
         return AnalysisResult.success(classes, errors);
     }
 
-    /**
-     * Finds all Java source files in a directory recursively.
-     *
-     * @param projectPath Path to search
-     * @return List of Java files
-     * @throws IOException if there's an error reading the directory
-     */
     private List<File> findJavaFiles(Path projectPath) throws IOException {
         List<File> javaFiles = new ArrayList<>();
 
@@ -150,10 +115,6 @@ public class ProjectAnalyzer {
         return javaFiles;
     }
 
-    /**
-     * Result of a code analysis operation.
-     * Contains the analyzed classes and any errors encountered.
-     */
     public static class AnalysisResult {
         private final boolean success;
         private final List<ClassInfo> classes;
@@ -165,88 +126,38 @@ public class ProjectAnalyzer {
             this.errors = errors != null ? List.copyOf(errors) : List.of();
         }
 
-        /**
-         * Creates a successful analysis result.
-         *
-         * @param classes List of analyzed classes
-         * @return AnalysisResult instance
-         */
         public static AnalysisResult success(List<ClassInfo> classes) {
             return new AnalysisResult(true, classes, List.of());
         }
 
-        /**
-         * Creates a successful analysis result with warnings.
-         *
-         * @param classes List of analyzed classes
-         * @param errors  List of error messages (warnings)
-         * @return AnalysisResult instance
-         */
         public static AnalysisResult success(List<ClassInfo> classes, List<String> errors) {
             return new AnalysisResult(true, classes, errors);
         }
 
-        /**
-         * Creates a failed analysis result.
-         *
-         * @param error Error message
-         * @return AnalysisResult instance
-         */
         public static AnalysisResult failure(String error) {
             return new AnalysisResult(false, List.of(), List.of(error));
         }
 
-        /**
-         * Creates a failed analysis result with multiple errors.
-         *
-         * @param errors List of error messages
-         * @return AnalysisResult instance
-         */
         public static AnalysisResult failure(List<String> errors) {
             return new AnalysisResult(false, List.of(), errors);
         }
 
-        /**
-         * Checks if the analysis was successful.
-         *
-         * @return true if analysis succeeded
-         */
         public boolean isSuccess() {
             return success;
         }
 
-        /**
-         * Gets the list of analyzed classes.
-         *
-         * @return List of ClassInfo objects
-         */
         public List<ClassInfo> getClasses() {
             return classes;
         }
 
-        /**
-         * Gets the list of errors encountered during analysis.
-         *
-         * @return List of error messages
-         */
         public List<String> getErrors() {
             return errors;
         }
 
-        /**
-         * Checks if there are any errors.
-         *
-         * @return true if there are errors
-         */
         public boolean hasErrors() {
             return !errors.isEmpty();
         }
 
-        /**
-         * Gets a summary of the analysis result.
-         *
-         * @return Summary string
-         */
         public String getSummary() {
             if (success) {
                 String summary = String.format("Successfully analyzed %d class(es)", classes.size());

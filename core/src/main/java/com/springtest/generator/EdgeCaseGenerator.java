@@ -9,57 +9,33 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Generates edge case tests for methods.
- * Creates tests for null parameters, empty collections, boundary values, and invalid formats.
- */
 public class EdgeCaseGenerator {
     private static final Logger logger = LoggerFactory.getLogger(EdgeCaseGenerator.class);
 
-    /**
-     * Generates all edge case test methods for a given method.
-     *
-     * @param methodInfo   Information about the method
-     * @param instanceName Name of the instance to call the method on
-     * @return List of test method strings
-     */
     public List<String> generateEdgeCaseTests(MethodInfo methodInfo, String instanceName) {
         logger.debug("Generating edge case tests for method: {}", methodInfo.name());
 
         List<String> testMethods = new ArrayList<>();
 
-        // Generate null parameter tests
         testMethods.addAll(generateNullParameterTests(methodInfo, instanceName));
 
-        // Generate empty collection/string tests
         testMethods.addAll(generateEmptyValueTests(methodInfo, instanceName));
 
-        // Generate boundary value tests
         testMethods.addAll(generateBoundaryValueTests(methodInfo, instanceName));
 
-        // Generate invalid format tests
         testMethods.addAll(generateInvalidFormatTests(methodInfo, instanceName));
 
         return testMethods;
     }
 
-    /**
-     * Generates test methods for null parameters.
-     *
-     * @param methodInfo   Method information
-     * @param instanceName Instance name
-     * @return List of null parameter test methods
-     */
     public List<String> generateNullParameterTests(MethodInfo methodInfo, String instanceName) {
         logger.debug("Generating null parameter tests for: {}", methodInfo.name());
 
         List<String> tests = new ArrayList<>();
 
-        // Generate a test for each nullable parameter
         for (int i = 0; i < methodInfo.parameters().size(); i++) {
             ParameterInfo param = methodInfo.parameters().get(i);
 
-            // Skip primitive types (they can't be null)
             if (param.isPrimitive()) {
                 continue;
             }
@@ -68,18 +44,14 @@ public class EdgeCaseGenerator {
             tests.add(testMethod);
         }
 
-        // If method has no parameters or only primitives, generate a simple test
         if (tests.isEmpty() && !methodInfo.parameters().isEmpty()) {
-            // All parameters are primitives, no null tests needed
+
             return tests;
         }
 
         return tests;
     }
 
-    /**
-     * Generates a single null parameter test.
-     */
     private String generateNullParameterTest(MethodInfo methodInfo, String instanceName, int paramIndex, ParameterInfo param) {
         StringBuilder test = new StringBuilder();
 
@@ -91,20 +63,19 @@ public class EdgeCaseGenerator {
         test.append("    void ").append(testName).append("() {\n");
         test.append("        // Arrange - null ").append(param.name()).append("\n");
 
-        // Build arguments list with null at the specific index
         List<String> args = buildArgumentsWithNullAt(methodInfo.parameters(), paramIndex);
 
         test.append("\n");
         test.append("        // Act & Assert\n");
 
         if (param.required() || methodInfo.hasValidation()) {
-            // Expect an exception for required/validated parameters
+
             test.append("        assertThatThrownBy(() -> ");
             test.append(instanceName).append(".").append(methodInfo.name());
             test.append("(").append(String.join(", ", args)).append("))\n");
             test.append("            .isInstanceOf(IllegalArgumentException.class);\n");
         } else {
-            // Method should handle null gracefully
+
             test.append("        assertThatCode(() -> ");
             test.append(instanceName).append(".").append(methodInfo.name());
             test.append("(").append(String.join(", ", args)).append("))\n");
@@ -116,9 +87,6 @@ public class EdgeCaseGenerator {
         return test.toString();
     }
 
-    /**
-     * Generates test methods for empty strings and collections.
-     */
     public List<String> generateEmptyValueTests(MethodInfo methodInfo, String instanceName) {
         logger.debug("Generating empty value tests for: {}", methodInfo.name());
 
@@ -137,9 +105,6 @@ public class EdgeCaseGenerator {
         return tests;
     }
 
-    /**
-     * Generates an empty string test.
-     */
     private String generateEmptyStringTest(MethodInfo methodInfo, String instanceName, int paramIndex, ParameterInfo param) {
         StringBuilder test = new StringBuilder();
 
@@ -173,9 +138,6 @@ public class EdgeCaseGenerator {
         return test.toString();
     }
 
-    /**
-     * Generates an empty collection test.
-     */
     private String generateEmptyCollectionTest(MethodInfo methodInfo, String instanceName, int paramIndex, ParameterInfo param) {
         StringBuilder test = new StringBuilder();
 
@@ -202,9 +164,6 @@ public class EdgeCaseGenerator {
         return test.toString();
     }
 
-    /**
-     * Generates test methods for boundary values.
-     */
     public List<String> generateBoundaryValueTests(MethodInfo methodInfo, String instanceName) {
         logger.debug("Generating boundary value tests for: {}", methodInfo.name());
 
@@ -221,25 +180,18 @@ public class EdgeCaseGenerator {
         return tests;
     }
 
-    /**
-     * Generates numeric boundary tests (0, -1, MAX_VALUE, MIN_VALUE).
-     */
     private List<String> generateNumericBoundaryTests(MethodInfo methodInfo, String instanceName, int paramIndex, ParameterInfo param) {
         List<String> tests = new ArrayList<>();
 
-        // Test with zero
         tests.add(generateBoundaryTest(methodInfo, instanceName, paramIndex, param, "Zero", "0"));
 
-        // Test with negative value (if signed type)
         if (!param.type().equals("char")) {
             tests.add(generateBoundaryTest(methodInfo, instanceName, paramIndex, param, "Negative", "-1"));
         }
 
-        // Test with MAX_VALUE
         String maxValue = getMaxValue(param.type());
         tests.add(generateBoundaryTest(methodInfo, instanceName, paramIndex, param, "MaxValue", maxValue));
 
-        // Test with MIN_VALUE
         if (!param.type().equals("char")) {
             String minValue = getMinValue(param.type());
             tests.add(generateBoundaryTest(methodInfo, instanceName, paramIndex, param, "MinValue", minValue));
@@ -248,9 +200,6 @@ public class EdgeCaseGenerator {
         return tests;
     }
 
-    /**
-     * Generates a single boundary value test.
-     */
     private String generateBoundaryTest(MethodInfo methodInfo, String instanceName, int paramIndex, ParameterInfo param, String boundaryName, String value) {
         StringBuilder test = new StringBuilder();
 
@@ -277,9 +226,6 @@ public class EdgeCaseGenerator {
         return test.toString();
     }
 
-    /**
-     * Generates test methods for invalid formats.
-     */
     public List<String> generateInvalidFormatTests(MethodInfo methodInfo, String instanceName) {
         logger.debug("Generating invalid format tests for: {}", methodInfo.name());
 
@@ -288,7 +234,6 @@ public class EdgeCaseGenerator {
         for (int i = 0; i < methodInfo.parameters().size(); i++) {
             ParameterInfo param = methodInfo.parameters().get(i);
 
-            // Check for email, URL, date formats based on validation annotations
             if (param.hasValidation()) {
                 tests.add(generateInvalidFormatTest(methodInfo, instanceName, i, param));
             }
@@ -297,9 +242,6 @@ public class EdgeCaseGenerator {
         return tests;
     }
 
-    /**
-     * Generates an invalid format test.
-     */
     private String generateInvalidFormatTest(MethodInfo methodInfo, String instanceName, int paramIndex, ParameterInfo param) {
         StringBuilder test = new StringBuilder();
 
@@ -326,9 +268,6 @@ public class EdgeCaseGenerator {
         return test.toString();
     }
 
-    /**
-     * Builds an arguments list with null at a specific index.
-     */
     private List<String> buildArgumentsWithNullAt(List<ParameterInfo> parameters, int nullIndex) {
         List<String> args = new ArrayList<>();
         for (int i = 0; i < parameters.size(); i++) {
@@ -341,9 +280,6 @@ public class EdgeCaseGenerator {
         return args;
     }
 
-    /**
-     * Builds an arguments list with a specific value at a specific index.
-     */
     private List<String> buildArgumentsWithValueAt(List<ParameterInfo> parameters, int index, String value) {
         List<String> args = new ArrayList<>();
         for (int i = 0; i < parameters.size(); i++) {
@@ -356,9 +292,6 @@ public class EdgeCaseGenerator {
         return args;
     }
 
-    /**
-     * Gets a default value for a parameter.
-     */
     private String getDefaultValue(ParameterInfo param) {
         return switch (param.type()) {
             case "String" -> "\"test\"";
@@ -375,9 +308,6 @@ public class EdgeCaseGenerator {
         };
     }
 
-    /**
-     * Gets an empty collection value.
-     */
     private String getEmptyCollectionValue(String type) {
         return switch (type) {
             case "List" -> "List.of()";
@@ -388,20 +318,14 @@ public class EdgeCaseGenerator {
         };
     }
 
-    /**
-     * Gets an invalid value for a parameter based on its validation.
-     */
     private String getInvalidValue(ParameterInfo param) {
-        // Based on common validation annotations
+
         if (param.type().equals("String")) {
             return "\"invalid@@@format\"";
         }
         return "\"invalid\"";
     }
 
-    /**
-     * Gets the maximum value for a numeric type.
-     */
     private String getMaxValue(String type) {
         return switch (type) {
             case "int", "Integer" -> "Integer.MAX_VALUE";
@@ -415,9 +339,6 @@ public class EdgeCaseGenerator {
         };
     }
 
-    /**
-     * Gets the minimum value for a numeric type.
-     */
     private String getMinValue(String type) {
         return switch (type) {
             case "int", "Integer" -> "Integer.MIN_VALUE";
@@ -430,23 +351,14 @@ public class EdgeCaseGenerator {
         };
     }
 
-    /**
-     * Checks if a type is a string type.
-     */
     private boolean isStringType(String type) {
         return "String".equals(type);
     }
 
-    /**
-     * Checks if a type is a collection type.
-     */
     private boolean isCollectionType(String type) {
         return type.equals("List") || type.equals("Set") || type.equals("Collection") || type.equals("Map");
     }
 
-    /**
-     * Checks if a type is numeric.
-     */
     private boolean isNumericType(String type) {
         return type.equals("int") || type.equals("Integer") ||
                type.equals("long") || type.equals("Long") ||
@@ -456,9 +368,6 @@ public class EdgeCaseGenerator {
                type.equals("short") || type.equals("Short");
     }
 
-    /**
-     * Capitalizes the first letter of a string.
-     */
     private String capitalize(String str) {
         if (str == null || str.isEmpty()) {
             return str;
@@ -466,11 +375,6 @@ public class EdgeCaseGenerator {
         return Character.toUpperCase(str.charAt(0)) + str.substring(1);
     }
 
-    /**
-     * Generates required imports for edge case tests.
-     *
-     * @return List of import statements
-     */
     public List<String> generateImports() {
         List<String> imports = new ArrayList<>();
         imports.add("import static org.assertj.core.api.Assertions.*;");
