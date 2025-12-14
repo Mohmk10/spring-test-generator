@@ -65,14 +65,13 @@
 
     <build>
         <plugins>
-            <!-- Create executable JAR -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>com.springtest.cli.SpringTestGeneratorCli</mainClass>
+                            <mainClass>com.springtest.cli.SpringTestGeneratorCommand</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
@@ -92,7 +91,7 @@
                         <configuration>
                             <transformers>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>com.springtest.cli.SpringTestGeneratorCli</mainClass>
+                                    <mainClass>com.springtest.cli.SpringTestGeneratorCommand</mainClass>
                                 </transformer>
                             </transformers>
                             <finalName>spring-test-generator</finalName>

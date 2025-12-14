@@ -16,7 +16,7 @@
         <configuration>
           <archive>
             <manifest>
-              <mainClass>com.springtest.cli.SpringTestGeneratorCli</mainClass>
+              <mainClass>com.springtest.cli.SpringTestGeneratorCommand</mainClass>
             </manifest>
           </archive>
         </configuration>
@@ -33,7 +33,7 @@
             <configuration>
               <transformers>
                 <transformer>
-                  <mainClass>com.springtest.cli.SpringTestGeneratorCli</mainClass>
+                  <mainClass>com.springtest.cli.SpringTestGeneratorCommand</mainClass>
                 </transformer>
               </transformers>
               <finalName>spring-test-generator</finalName>

@@ -2,6 +2,7 @@ package com.springtest.analyzer;
 
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseResult;
+import com.github.javaparser.ParserConfiguration;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
@@ -23,7 +24,9 @@ public class ClassScanner {
     private final JavaParser javaParser;
 
     public ClassScanner() {
-        this.javaParser = new JavaParser();
+        ParserConfiguration config = new ParserConfiguration();
+        config.setLanguageLevel(ParserConfiguration.LanguageLevel.JAVA_17);
+        this.javaParser = new JavaParser(config);
     }
 
     public ClassInfo scanClass(String sourcePath) {
