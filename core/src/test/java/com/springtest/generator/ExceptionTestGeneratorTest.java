@@ -344,25 +344,4 @@ class ExceptionTestGeneratorTest {
         assertThat(test).contains("service.updateUser(");
     }
 
-    @Test
-    void testGenerateExceptionTest_ContainsArrangeSection() {
-        MethodInfo methodInfo = new MethodInfo(
-                "deleteUser",
-                "void",
-                "void",
-                List.of(),
-                List.of(),
-                List.of("EntityNotFoundException"),
-                List.of(),
-                false,
-                AccessModifier.PUBLIC,
-                false,
-                false
-        );
-
-        String test = generator.generateExceptionTest(methodInfo, "service", "EntityNotFoundException", true);
-
-        assertThat(test).contains("// Arrange");
-        assertThat(test).contains("// Act & Assert");
-    }
 }

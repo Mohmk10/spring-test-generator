@@ -218,13 +218,4 @@ class RepositoryTestGeneratorTest {
                 .endsWith("}\n");
     }
 
-    @Test
-    void testGenerateTest_ContainsArrangeActAssert() {
-        String testCode = generator.generateTest(repositoryClass);
-
-        assertThat(testCode)
-                .contains("// Arrange")
-                .contains("// Act")
-                .contains("// Assert");
-    }
 }

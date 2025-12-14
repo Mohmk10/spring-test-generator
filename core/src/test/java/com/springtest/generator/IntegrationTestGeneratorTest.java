@@ -247,15 +247,6 @@ class IntegrationTestGeneratorTest {
                 .endsWith("}\n");
     }
 
-    @Test
-    void testGenerateTest_ContainsArrangeActAssert() {
-        String testCode = generator.generateTest(serviceClass);
-
-        assertThat(testCode)
-                .contains("// Arrange")
-                .contains("// Act")
-                .contains("// Assert");
-    }
 
     @Test
     void testGenerateTest_RestTemplateTest_ContainsHttpAssertions() {

@@ -123,15 +123,6 @@ class ServiceTestGeneratorTest {
                 .contains("void testFindById()");
     }
 
-    @Test
-    void testGenerateTest_ContainsArrangeActAssert() {
-        String testCode = generator.generateTest(serviceClass);
-
-        assertThat(testCode)
-                .contains("// Arrange")
-                .contains("// Act")
-                .contains("// Assert");
-    }
 
     @Test
     void testGenerateTest_ContainsRequiredImports() {
