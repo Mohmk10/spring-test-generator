@@ -16,13 +16,17 @@ repositories {
 }
 
 dependencies {
-    // Core module dependency will be configured once published
-    // implementation project(':core')
+    implementation files('../core/target/spring-test-generator-core-1.0.0-SNAPSHOT.jar')
 
-    // Gradle API
+    implementation 'com.github.javaparser:javaparser-symbol-solver-core:3.25.8'
+    implementation 'org.freemarker:freemarker:2.3.32'
+    implementation 'org.springframework:spring-context:6.1.2'
+    implementation 'org.springframework:spring-web:6.1.2'
+    implementation 'org.springframework.data:spring-data-jpa:3.2.1'
+    implementation 'org.slf4j:slf4j-api:2.0.9'
+
     implementation gradleApi()
 
-    // Testing
     testImplementation 'org.junit.jupiter:junit-jupiter:5.10.1'
     testImplementation 'org.mockito:mockito-core:5.8.0'
     testImplementation 'org.mockito:mockito-junit-jupiter:5.8.0'
@@ -32,8 +36,8 @@ dependencies {
 gradlePlugin {
     plugins {
         springTestGenerator {
-            id = 'com.springtestgen.gradle-plugin'
-            implementationClass = 'com.springtestgen.gradle.SpringTestGeneratorPlugin'
+            id = 'com.springtest.gradle-plugin'
+            implementationClass = 'com.springtest.gradle.SpringTestGeneratorPlugin'
             displayName = 'Spring Test Generator Gradle Plugin'
             description = 'Gradle plugin for automatic test generation in Spring Boot projects'
         }
