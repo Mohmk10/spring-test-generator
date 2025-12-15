@@ -33,3 +33,10 @@ CLAUDE.md
 
 # Logs
 *.log
+
+# Node
+node_modules/
+package-lock.json
+
+# VS Code Extension
+*.vsix
