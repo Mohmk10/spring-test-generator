@@ -1,0 +1,77 @@
+{
+  "name": "spring-test-generator",
+  "displayName": "Spring Test Generator",
+  "description": "Automatically generate unit and integration tests for Spring Boot applications",
+  "version": "1.0.0",
+  "publisher": "springtest",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Testing",
+    "Programming Languages"
+  ],
+  "activationEvents": [
+    "onCommand:springTestGen.generate",
+    "onCommand:springTestGen.analyze"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "springTestGen.generate",
+        "title": "Spring Test Generator: Generate Tests"
+      },
+      {
+        "command": "springTestGen.analyze",
+        "title": "Spring Test Generator: Analyze Spring Classes"
+      }
+    ],
+    "configuration": {
+      "title": "Spring Test Generator",
+      "properties": {
+        "springTestGenerator.sourceDirectory": {
+          "type": "string",
+          "default": "src/main/java",
+          "description": "Source code directory"
+        },
+        "springTestGenerator.outputDirectory": {
+          "type": "string",
+          "default": "src/test/java",
+          "description": "Test output directory"
+        },
+        "springTestGenerator.testType": {
+          "type": "string",
+          "enum": ["unit", "integration", "all"],
+          "default": "all",
+          "description": "Type of tests to generate"
+        },
+        "springTestGenerator.namingStrategy": {
+          "type": "string",
+          "enum": ["method-scenario", "bdd", "given-when-then"],
+          "default": "method-scenario",
+          "description": "Test method naming strategy"
+        },
+        "springTestGenerator.cliJarPath": {
+          "type": "string",
+          "default": "",
+          "description": "Path to spring-test-generator CLI JAR (leave empty to auto-detect)"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "lint": "eslint src --ext ts"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/vscode": "^1.80.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.0.0",
+    "typescript": "^5.0.0"
+  }
+}
