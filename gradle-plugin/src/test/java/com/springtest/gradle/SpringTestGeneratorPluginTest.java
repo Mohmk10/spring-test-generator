@@ -18,7 +18,7 @@ class SpringTestGeneratorPluginTest {
 
     @Test
     void testPluginApplies() {
-        project.getPluginManager().apply("com.springtest.gradle-plugin");
+        project.getPluginManager().apply("io.github.mohmk10.spring-test-generator");
 
         assertThat(project.getExtensions().findByName("springTestGenerator"))
                 .isNotNull()
@@ -27,7 +27,7 @@ class SpringTestGeneratorPluginTest {
 
     @Test
     void testGenerateTestsTaskRegistered() {
-        project.getPluginManager().apply("com.springtest.gradle-plugin");
+        project.getPluginManager().apply("io.github.mohmk10.spring-test-generator");
 
         assertThat(project.getTasks().findByName("generateTests"))
                 .isNotNull()
@@ -36,7 +36,7 @@ class SpringTestGeneratorPluginTest {
 
     @Test
     void testAnalyzeSpringClassesTaskRegistered() {
-        project.getPluginManager().apply("com.springtest.gradle-plugin");
+        project.getPluginManager().apply("io.github.mohmk10.spring-test-generator");
 
         assertThat(project.getTasks().findByName("analyzeSpringClasses"))
                 .isNotNull()
@@ -45,7 +45,7 @@ class SpringTestGeneratorPluginTest {
 
     @Test
     void testExtensionHasDefaultValues() {
-        project.getPluginManager().apply("com.springtest.gradle-plugin");
+        project.getPluginManager().apply("io.github.mohmk10.spring-test-generator");
 
         SpringTestGeneratorExtension extension = project.getExtensions()
                 .getByType(SpringTestGeneratorExtension.class);
@@ -58,7 +58,7 @@ class SpringTestGeneratorPluginTest {
 
     @Test
     void testExtensionCanBeConfigured() {
-        project.getPluginManager().apply("com.springtest.gradle-plugin");
+        project.getPluginManager().apply("io.github.mohmk10.spring-test-generator");
 
         SpringTestGeneratorExtension extension = project.getExtensions()
                 .getByType(SpringTestGeneratorExtension.class);
@@ -76,7 +76,7 @@ class SpringTestGeneratorPluginTest {
 
     @Test
     void testTasksHaveCorrectGroup() {
-        project.getPluginManager().apply("com.springtest.gradle-plugin");
+        project.getPluginManager().apply("io.github.mohmk10.spring-test-generator");
 
         GenerateTestsTask generateTask = (GenerateTestsTask) project.getTasks()
                 .findByName("generateTests");
@@ -89,7 +89,7 @@ class SpringTestGeneratorPluginTest {
 
     @Test
     void testTasksHaveDescriptions() {
-        project.getPluginManager().apply("com.springtest.gradle-plugin");
+        project.getPluginManager().apply("io.github.mohmk10.spring-test-generator");
 
         GenerateTestsTask generateTask = (GenerateTestsTask) project.getTasks()
                 .findByName("generateTests");

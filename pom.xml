@@ -5,14 +5,14 @@
          http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.springtest</groupId>
+    <groupId>io.github.mohmk10</groupId>
     <artifactId>spring-test-generator</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>Spring Boot Test Generator</name>
     <description>Automatic test generation tool for Spring Boot applications</description>
-    <url>https://github.com/mkankouyate/spring-test-generator</url>
+    <url>https://github.com/Mohmk10/spring-test-generator</url>
 
     <licenses>
         <license>
@@ -24,15 +24,15 @@
 
     <developers>
         <developer>
-            <name>Mohamed Kouyate</name>
+            <name>Mohamed Makan</name>
             <email>mkan.kouyate@gmail.com</email>
         </developer>
     </developers>
 
     <scm>
-        <connection>scm:git:git://github.com/mkankouyate/spring-test-generator.git</connection>
-        <developerConnection>scm:git:ssh://github.com/mkankouyate/spring-test-generator.git</developerConnection>
-        <url>https://github.com/mkankouyate/spring-test-generator</url>
+        <connection>scm:git:git://github.com/Mohmk10/spring-test-generator.git</connection>
+        <developerConnection>scm:git:ssh://github.com/Mohmk10/spring-test-generator.git</developerConnection>
+        <url>https://github.com/Mohmk10/spring-test-generator</url>
         <tag>HEAD</tag>
     </scm>
 

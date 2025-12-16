@@ -3,7 +3,11 @@
   "displayName": "Spring Test Generator",
   "description": "Automatically generate unit and integration tests for Spring Boot applications",
   "version": "1.0.0",
-  "publisher": "springtest",
+  "publisher": "mohmk10",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Mohmk10/spring-test-generator.git"
+  },
   "engines": {
     "vscode": "^1.80.0"
   },

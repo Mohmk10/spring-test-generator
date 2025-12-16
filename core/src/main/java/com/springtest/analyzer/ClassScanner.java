@@ -25,7 +25,7 @@ public class ClassScanner {
 
     public ClassScanner() {
         ParserConfiguration config = new ParserConfiguration();
-        config.setLanguageLevel(ParserConfiguration.LanguageLevel.JAVA_17);
+        config.setLanguageLevel(ParserConfiguration.LanguageLevel.JAVA_14);
         this.javaParser = new JavaParser(config);
     }
 

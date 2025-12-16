@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.springtest</groupId>
+        <groupId>io.github.mohmk10</groupId>
         <artifactId>spring-test-generator</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
@@ -20,7 +20,7 @@
     <dependencies>
         <!-- Core module -->
         <dependency>
-            <groupId>com.springtest</groupId>
+            <groupId>io.github.mohmk10</groupId>
             <artifactId>spring-test-generator-core</artifactId>
             <version>${project.version}</version>
         </dependency>
