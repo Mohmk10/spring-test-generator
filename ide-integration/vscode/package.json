@@ -2,8 +2,9 @@
   "name": "spring-test-generator",
   "displayName": "Spring Test Generator",
   "description": "Automatically generate unit and integration tests for Spring Boot applications",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "publisher": "mohmk10",
+  "icon": "images/icon.png",
   "repository": {
     "type": "git",
     "url": "https://github.com/Mohmk10/spring-test-generator.git"
@@ -46,13 +47,21 @@
         },
         "springTestGenerator.testType": {
           "type": "string",
-          "enum": ["unit", "integration", "all"],
+          "enum": [
+            "unit",
+            "integration",
+            "all"
+          ],
           "default": "all",
           "description": "Type of tests to generate"
         },
         "springTestGenerator.namingStrategy": {
           "type": "string",
-          "enum": ["method-scenario", "bdd", "given-when-then"],
+          "enum": [
+            "method-scenario",
+            "bdd",
+            "given-when-then"
+          ],
           "default": "method-scenario",
           "description": "Test method naming strategy"
         },
@@ -75,6 +84,7 @@
     "@types/vscode": "^1.80.0",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
+    "@vscode/vsce": "^3.7.1",
     "eslint": "^8.0.0",
     "typescript": "^5.0.0"
   }
